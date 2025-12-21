@@ -367,7 +367,7 @@ function setupVoiceRecognition() {
           lastCommandTime = Date.now(); // 전송 시간 기록
           
           feedbackEmoji = "⚡"; 
-          recognitionStatus = `"${sentData}" 즉시 실행됨!`;
+          recognitionStatus = `"${sentData}" 음성 명령어 감지됨!`;
           displayRecognitionStatus();
           displaySentData();
         }
@@ -492,3 +492,4 @@ async function sendBluetoothData(data) {
     console.error("Send error:", e);
   }
 }
+
