@@ -1,0 +1,345 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Pretendard', sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #E6F0FA 0%, #FDF6E3 100%);
+  overflow-x: hidden;
+  color: #2c3e50;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.05"%3E%3Ccircle cx="50" cy="50" r="40" fill="none" stroke="%2378B3FF" stroke-width="2"/%3E%3C/svg%3E');
+  z-index: -1;
+}
+
+header {
+  width: 100%;
+  padding: 1rem 2vw;
+  background: linear-gradient(90deg, #FE818D, #78B3FF);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.title {
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.title img {
+  height: clamp(1.2rem, 3vw, 1.8rem);
+  width: auto;
+}
+
+.back-button {
+  padding: clamp(0.5rem, 1vw, 0.7rem) clamp(1rem, 2vw, 1.5rem);
+  background: #ffffff;
+  color: #FE818D;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 2px solid #FE818D;
+}
+
+.back-button:hover {
+  background: #78B3FF;
+  color: #ffffff;
+  border-color: #78B3FF;
+  transform: translateY(-2px);
+}
+
+main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5vw;
+  gap: 3vh;
+}
+
+.canvas-container {
+  display: none;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+canvas {
+  display: none;
+}
+
+.controls {
+  width: 90vw;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 3vh;
+}
+
+.control-group {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.control-group:hover {
+  transform: translateY(-5px); 
+}
+
+.control-group h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  color: #FE818D;
+  font-weight: 600;
+  text-align: center;
+}
+
+.control-group p {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5vw;
+  justify-content: center;
+}
+
+button, input {
+  padding: 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+button {
+  background: #78B3FF; 
+  color: #ffffff;
+  width: 45%;
+  cursor: pointer;
+  font-weight: 500;
+  box-shadow: 0 4px 10px rgba(120, 179, 255, 0.2);
+}
+
+button:hover {
+  background: #FE818D; 
+  transform: translateY(-3px) scale(1.05); 
+  box-shadow: 0 6px 15px rgba(254, 129, 141, 0.3);
+}
+
+/* 엑셀 및 일반 버튼 스타일 */
+.start-button { background: #78B3FF; }
+.start-button:hover { background: #FE818D; transform: translateY(-3px); }
+
+.stop-button { background: #FE818D; }
+.stop-button:hover { background: #e74c3c; transform: translateY(-3px); }
+
+.excel-button {
+  background: #27ae60; /* 엑셀 색상 */
+  font-size: 0.9rem;
+  padding: 0.8rem;
+}
+.excel-button:hover { background: #2ecc71; }
+
+/* ======== 음성 인식 버튼 (마이크) 및 파동 애니메이션 ======== */
+.mic-button {
+  width: 100px !important;
+  height: 100px !important;
+  border-radius: 50%;
+  background: #78B3FF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+  color: white;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: transform 0.1s ease, background 0.2s ease;
+}
+
+/* 버튼 눌렀을 때 활성화 상태 */
+.mic-button.active {
+  background: #FE818D;
+  transform: scale(0.95);
+}
+
+/* 눌렀을 때 주변으로 퍼지는 파동 효과 */
+.mic-button.active::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: rgba(254, 129, 141, 0.4);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  animation: ripple 1.2s infinite cubic-bezier(0, 0.2, 0.8, 1);
+}
+
+.mic-button.active::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: rgba(254, 129, 141, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  animation: ripple 1.2s infinite 0.6s cubic-bezier(0, 0.2, 0.8, 1);
+}
+
+@keyframes ripple {
+  0% {
+    width: 100px;
+    height: 100px;
+    opacity: 1;
+  }
+  100% {
+    width: 250px;
+    height: 250px;
+    opacity: 0;
+  }
+}
+
+/* ================================================== */
+
+input {
+  width: 100%;
+  background: #ecf0f1;
+  color: #2c3e50;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 12px;
+}
+input:focus { border-color: #78B3FF; }
+
+#bluetoothStatus {
+  padding: 1rem;
+  font-size: 1rem;
+  text-align: center;
+  border-radius: 12px;
+  font-weight: 600;
+  background: #f9f9f9;
+  color: #FE818D;
+}
+
+#recognitionStatus, #recognitionResult, #sentDataDisplay {
+  padding: 1.4rem; 
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 600;
+  border-radius: 20px;
+  line-height: 0.98; 
+}
+#recognitionStatus { border: none; background: none; }
+#recognitionResult, #sentDataDisplay { background: #f5f6f5; border: 1px solid #FE818D; }
+
+#command-table-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto;
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #78B3FF;
+  color: #fff;
+  padding: 15px;
+  border: 1px solid #000;
+  white-space: nowrap;
+}
+
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+#user-command-ui {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+#voice-recognition-ui {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+footer {
+  width: 100%;
+  padding: 1rem 2vw;
+  background: #ffffff;
+  text-align: center;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin-top: auto;
+}
+
+@media only screen and (min-width: 901px) {
+  main {
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .controls {
+    width: 50vw;
+    max-height: 80vh; 
+    overflow-y: auto;
+  }
+  button { width: 30%; }
+  .mic-button { width: 100px !important; }
+}
