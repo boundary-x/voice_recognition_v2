@@ -1,23 +1,23 @@
-/* style.css - Minimal Tech Design */
+/* style.css - Black & White Modern Style */
 
 :root {
-  /* Google/Tech Style Palette */
-  --primary: #1A73E8;       /* 신뢰감 주는 블루 */
-  --primary-hover: #1557B0;
-  --secondary: #5F6368;     /* 차분한 그레이 */
-  --background: #F8F9FA;    /* 아주 밝은 회색 배경 */
-  --surface: #FFFFFF;       /* 카드형 흰색 배경 */
-  --text-main: #202124;     /* 진한 본문 텍스트 */
-  --text-sub: #5F6368;      /* 설명 텍스트 */
-  --border: #DADCE0;        /* 은은한 테두리 */
-  --danger: #EA4335;        /* 정지/경고 */
-  --success: #34A853;       /* 엑셀/성공 */
+  /* Palette Update: Black & Mono */
+  --primary: #000000;       /* 메인 컬러: 블랙 */
+  --primary-hover: #333333; /* 호버: 진한 회색 */
+  --accent-grey: #F8F9FA;   /* 카드 배경: 아주 연한 회색 */
+  --border-color: #D1D5DB;  /* 카드 테두리: 구분감 있는 회색 */
   
-  --radius: 12px;           /* 부드러운 모서리 */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+  --bg-color: #FFFFFF;      /* 전체 배경: 화이트 (카드가 회색이므로 배경은 흰색) */
+  --text-main: #111111;     /* 본문: 거의 검정 */
+  --text-sub: #666666;      /* 설명: 회색 */
   
-  --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  --danger: #EA4335;        /* 정지/경고 (포인트 컬러 유지) */
+  
+  /* Shapes */
+  --radius-pill: 50px;      /* 알약 모양 (완전 둥근 모서리) */
+  --radius-card: 16px;      /* 카드 모서리 */
+  
+  --font-family: 'Pretendard', -apple-system, sans-serif;
 }
 
 * {
@@ -28,7 +28,7 @@
 }
 
 body {
-  background-color: var(--background);
+  background-color: var(--bg-color);
   color: var(--text-main);
   line-height: 1.6;
   min-height: 100vh;
@@ -36,10 +36,10 @@ body {
   flex-direction: column;
 }
 
-/* Header */
+/* 1. 헤더: 검은색 배경 */
 header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  background: #000000;
+  border-bottom: 1px solid #333;
   padding: 1rem 5vw;
   display: flex;
   justify-content: space-between;
@@ -47,13 +47,13 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: var(--shadow-sm);
 }
 
+/* 3. 헤더 타이틀 텍스트: 흰색 */
 .title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -62,65 +62,58 @@ header {
 .title img {
   height: 28px;
   width: auto;
+  /* 로고가 검은 글씨라면 잘 안 보일 수 있으므로 배경을 흰색으로 살짝 깔아주는 필터 (선택사항) */
+  /* filter: drop-shadow(0 0 1px white); */ 
 }
 
+/* 5. 돌아가기 버튼: 알약 모양, 흰색 테두리 */
 .back-button {
   text-decoration: none;
-  color: var(--primary);
+  color: #FFFFFF;
+  border: 1px solid #FFFFFF;
   font-size: 0.9rem;
   font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  transition: background 0.2s;
+  padding: 0.5rem 1.2rem;
+  border-radius: var(--radius-pill); /* R값 높이기 */
+  transition: all 0.2s;
 }
 
 .back-button:hover {
-  background: #E8F0FE; /* 연한 블루 배경 */
+  background: #FFFFFF;
+  color: #000000;
 }
 
 /* Main Layout */
 main {
   width: 100%;
-  max-width: 840px; /* 가독성을 위한 중앙 정렬 너비 제한 */
+  max-width: 840px;
   margin: 0 auto;
   padding: 3rem 1.5rem;
-  flex: 1; /* Footer를 하단으로 밀어내기 위함 */
+  flex: 1;
 }
 
-/* Canvas 숨김 (p5.js) */
-.canvas-container, canvas {
-  display: none;
-}
+.canvas-container, canvas { display: none; }
 
-/* Controls Section (Cards) */
 .controls {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
+/* 7. 섹션 카드: 아주 연한 회색 배경 + 진한 회색 외곽선 */
 .control-group {
-  background: var(--surface);
-  padding: 2rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.control-group:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  background: var(--accent-grey);
+  padding: 2.5rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-color); /* 구분감 있는 선 */
+  /* 그림자 제거하여 깔끔하게 (미니멀리즘) */
 }
 
 .control-group h3 {
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 0.5rem;
   color: var(--text-main);
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .control-group p {
@@ -129,7 +122,7 @@ main {
   margin-bottom: 1.5rem;
 }
 
-/* Buttons */
+/* Button Global Styles */
 .button-group {
   display: flex;
   gap: 12px;
@@ -140,187 +133,171 @@ button {
   cursor: pointer;
   border: none;
   font-size: 0.95rem;
-  font-weight: 500;
-  padding: 0.8rem 1.2rem;
-  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.9rem 1.5rem;
+  border-radius: var(--radius-pill); /* 5. 버튼 R값 높이기 (알약) */
   transition: all 0.2s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
 }
 
-/* Primary Button (Blue) */
+/* 4. 기본 버튼 (기기 연결, 추가 등): 파란색 -> 검은색 */
 .start-button {
-  background-color: var(--primary);
+  background-color: var(--primary); /* Black */
   color: white;
 }
 .start-button:hover {
-  background-color: var(--primary-hover);
-  box-shadow: 0 2px 6px rgba(26, 115, 232, 0.3);
+  background-color: var(--primary-hover); /* Dark Grey */
+  transform: translateY(-2px);
 }
 
-/* Secondary Button (White/Grey) */
+/* 6. 기기 연결 / 연결 해제 버튼 너비 늘리기 */
+#bluetooth-control-buttons button {
+  min-width: 200px; /* 너비 대폭 확대 */
+  flex: 1; /* 가능하면 공간 차지 */
+}
+
+/* 연결 해제 버튼 (Stop) */
 .stop-button {
   background-color: white;
   color: var(--danger);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-color);
 }
 .stop-button:hover {
-  background-color: #FEF7F6;
+  background-color: #FFF5F5;
   border-color: var(--danger);
 }
 
-/* Excel Button (Green) */
+/* 8. 엑셀 버튼: 텍스트/외곽선 검정 -> 호버시 진한 회색 배경 */
 .excel-button {
-  background-color: white;
-  color: var(--success);
-  border: 1px solid var(--border);
+  background-color: transparent;
+  color: #000000;
+  border: 1px solid #000000;
 }
 .excel-button:hover {
-  background-color: #F6FBF7;
-  border-color: var(--success);
+  background-color: #333333; /* 진한 회색 배경 */
+  color: #FFFFFF;            /* 텍스트는 흰색으로 반전 */
+  border-color: #333333;
 }
 
 /* Inputs */
 input {
   width: 100%;
-  padding: 0.8rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  padding: 0.9rem 1.2rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-card); /* 인풋은 카드 R값 따름 */
   font-size: 1rem;
-  background: #F1F3F4;
+  background: #FFFFFF;
   color: var(--text-main);
-  transition: 0.2s;
   outline: none;
 }
-
 input:focus {
-  background: white;
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
 }
 
 /* Status Messages */
 #bluetoothStatus, #recognitionStatus, #recognitionResult, #sentDataDisplay {
   margin-top: 1rem;
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-card);
   font-size: 0.95rem;
   text-align: center;
   font-weight: 500;
 }
 
 #bluetoothStatus {
-  background-color: #E8F0FE; /* Light Blue */
-  color: var(--primary);
+  background-color: #F1F3F4; /* Light Grey */
+  color: #333;
+  border: 1px solid var(--border-color);
 }
 
 #recognitionStatus {
   background: none;
   color: var(--text-sub);
-  padding: 0.5rem;
 }
 
 #recognitionResult, #sentDataDisplay {
-  background-color: #F8F9FA;
-  border: 1px solid var(--border);
+  background-color: #FFFFFF;
+  border: 1px solid var(--border-color);
   color: var(--text-main);
 }
 
 /* Table */
 #command-table-container {
   overflow-x: auto;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-card);
+  background: white;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
 }
 
 th {
-  background: #F8F9FA;
-  color: var(--text-sub);
-  font-weight: 600;
+  background: #F1F3F4;
+  color: #333;
+  font-weight: 700;
   text-align: left;
   padding: 1rem;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
+  border-bottom: 1px solid var(--border-color);
 }
 
 td {
   padding: 1rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-color);
   color: var(--text-main);
 }
+tr:last-child td { border-bottom: none; }
 
-tr:last-child td {
-  border-bottom: none;
-}
-
-/* User Input Area */
+/* User Input Layout */
 #user-command-ui {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 1rem;
 }
-#user-command-ui input { flex: 2; min-width: 150px; }
-#user-command-ui button { flex: 1; min-width: 80px; }
+#user-command-ui input { flex: 2; }
+#user-command-ui button { flex: 1; min-width: 100px; }
 
-/* Mic Button Area */
+/* Mic Button (검은색) */
 #voice-recognition-ui {
   display: flex;
   justify-content: center;
-  align-items: center;
   padding: 2rem 0;
 }
 
 .mic-button {
-  width: 72px !important;
-  height: 72px !important;
-  border-radius: 50%;
-  background: var(--primary);
-  border: none;
+  width: 80px !important;
+  height: 80px !important;
+  border-radius: 50% !important; /* 마이크는 원형 유지 */
+  background: var(--primary); /* Black */
   color: white;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 4px 10px rgba(26, 115, 232, 0.4);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  z-index: 10;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .mic-button:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(26, 115, 232, 0.5);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 }
 
 .mic-button.active {
   background: var(--danger);
   transform: scale(1.1);
-  box-shadow: 0 0 0 8px rgba(234, 67, 53, 0.2); /* 파동 대신 깔끔한 링 */
+  box-shadow: 0 0 0 8px rgba(234, 67, 53, 0.2);
 }
 
-/* SVG Icon in Button */
-.mic-button svg {
-  width: 32px;
-  height: 32px;
-  fill: white;
-}
+.mic-button svg { width: 32px; height: 32px; fill: white; }
 
-/* Footer */
+/* 1. 푸터: 검은색 배경 */
 footer {
   margin-top: auto;
   padding: 2rem;
   text-align: center;
   font-size: 0.85rem;
-  color: var(--text-sub);
-  background: var(--background);
-  border-top: 1px solid var(--border);
+  background: #000000;
+  color: #888; /* 텍스트는 약간 어둡게 */
 }
