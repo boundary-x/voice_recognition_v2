@@ -38,7 +38,7 @@ const voiceCommands = {
   backward: ["뒤로", "후진"],
   stop: ["멈춰", "정지", "그만"],
   left: ["좌회전", "왼쪽", "좌측", "좌로", "반시계"],
-  right: ["우회전", "오른쪽", "우측", "으로", "시계"],
+  right: ["우회전", "오른쪽", "우측", "우로", "시계"],
   ring: ["사이렌", "소리", "부저", "경보음"]
 };
 
@@ -492,5 +492,6 @@ async function sendBluetoothData(data) {
     console.error("Send error:", e);
   }
 }
+
 
 
