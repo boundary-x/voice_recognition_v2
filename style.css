@@ -1,8 +1,45 @@
+/* BoundaryX Style - Notion Minimalist Theme */
+
+/* 1. 폰트 및 기본 설정 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Brand Identity */
+  --brand-color: #63B8E6;        /* 바운더리엑스 메인 블루 */
+  --brand-bg: #EAF6FB;           /* 연한 블루 (배경/강조) */
+  
+  /* Notion Color Palette */
+  --bg-page: #FFFFFF;            /* 전체 배경: 완전 흰색 */
+  --bg-block: #F7F7F5;           /* 카드 배경: 노션 특유의 연회색 */
+  --border-line: #E9E9E7;        /* 테두리: 아주 연한 회색 */
+  
+  /* Text Colors */
+  --text-title: #37352F;         /* 제목: 진한 검정 */
+  --text-body: #37352F;          /* 본문 */
+  --text-gray: #787774;          /* 설명/비활성 텍스트 */
+  
+  /* Status Colors */
+  --color-red: #E03E3E;
+  --bg-red-light: #FBE4E4;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: 'Pretendard', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* p5.js 캔버스 숨김 (스크롤 방지) */
+.canvas-container, #p5-container {
+  display: none !important;
+  width: 0;
+  height: 0;
+}
+canvas {
+  display: none !important;
 }
 
 body {
@@ -10,28 +47,20 @@ body {
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #E6F0FA 0%, #FDF6E3 100%);
+  background-color: var(--bg-page); /* 그라디언트 제거 -> 흰색 */
+  color: var(--text-body);
   overflow-x: hidden;
-  color: #2c3e50;
   position: relative;
 }
 
-body::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.05"%3E%3Ccircle cx="50" cy="50" r="40" fill="none" stroke="%2378B3FF" stroke-width="2"/%3E%3C/svg%3E');
-  z-index: -1;
-}
-
+/* 2. 헤더 디자인 (심플하게) */
 header {
   width: 100%;
-  padding: 1rem 2vw;
-  background: linear-gradient(90deg, #FE818D, #78B3FF);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  max-width: 900px;
+  padding: 1.5rem 20px;
+  background: var(--bg-page); /* 배경색 흰색으로 통일 */
+  border-bottom: 1px solid var(--border-line); /* 얇은 줄 하나 */
+  box-shadow: none; /* 그림자 제거 */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -41,305 +70,327 @@ header {
 }
 
 .title {
-  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-title);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 .title img {
-  height: clamp(1.2rem, 3vw, 1.8rem);
+  height: 1.4rem;
   width: auto;
+  border-radius: 3px;
 }
 
 .back-button {
-  padding: clamp(0.5rem, 1vw, 0.7rem) clamp(1rem, 2vw, 1.5rem);
-  background: #ffffff;
-  color: #FE818D;
-  border-radius: 10px;
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--text-gray);
+  border: 1px solid transparent; /* 평소엔 테두리 없음 */
+  border-radius: 4px;
   text-decoration: none;
-  font-size: clamp(0.8rem, 2vw, 1rem);
+  font-size: 0.9rem;
   font-weight: 500;
-  transition: all 0.3s ease;
-  border: 2px solid #FE818D;
+  transition: all 0.2s;
 }
 
 .back-button:hover {
-  background: #78B3FF;
-  color: #ffffff;
-  border-color: #78B3FF;
-  transform: translateY(-2px);
+  background: var(--bg-block);
+  color: var(--text-title);
 }
 
+/* 3. 메인 레이아웃 */
 main {
   width: 100%;
+  max-width: 900px; /* 노션 페이지 폭 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2.5vw;
-  gap: 3vh;
+  padding: 2rem 20px;
+  gap: 2rem;
 }
 
-.canvas-container {
-  display: none;
-  width: 0;
-  height: 0;
-  overflow: hidden;
-}
-
-canvas {
-  display: none;
-}
-
+/* 4. 섹션 (카드) 디자인 - 노션 Callout 블록 스타일 */
 .controls {
-  width: 90vw;
-  max-width: 700px;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 3vh;
+  gap: 1.5rem;
 }
 
 .control-group {
-  background: #ffffff;
+  background: var(--bg-block); /* 아주 연한 회색 */
   padding: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease;
+  border-radius: 6px; /* 둥근 정도를 20px -> 6px로 줄임 (단정함) */
+  box-shadow: none;   /* 그림자 제거 (Flat Design) */
+  border: 1px solid transparent;
+  transition: border-color 0.2s;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .control-group:hover {
-  transform: translateY(-5px); 
+  transform: none; /* 움직임 제거 */
+  border-color: #D3D1CB; /* 호버 시 얇은 테두리 */
 }
 
 .control-group h3 {
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   margin-bottom: 0.5rem;
-  color: #FE818D;
+  color: var(--text-title);
   font-weight: 600;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .control-group p {
   font-size: 0.9rem;
-  color: #7f8c8d;
-  text-align: center;
+  color: var(--text-gray);
   margin-bottom: 1.5rem;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
-.button-group {
+/* 5. 버튼 & 입력창 그룹 정렬 */
+.button-group, #user-command-ui, #bluetooth-control-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5vw;
-  justify-content: center;
+  justify-content: center; /* 중앙 정렬 */
+  gap: 10px;
+  width: 100%;
 }
 
-button, input {
-  padding: 1rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  outline: none;
-}
-
+/* 공통 버튼 스타일 (Flat & Minimal) */
 button {
-  background: #78B3FF; 
-  color: #ffffff;
-  width: 45%;
-  cursor: pointer;
+  background: #FFFFFF;
+  color: var(--text-body);
+  border: 1px solid #D3D1CB; /* 얇은 회색 테두리 */
+  padding: 0.7rem 1.2rem;
+  font-size: 0.95rem;
   font-weight: 500;
-  box-shadow: 0 4px 10px rgba(120, 179, 255, 0.2);
+  border-radius: 4px; /* 노션 버튼 스타일 */
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* 아주 미세한 그림자 */
+  transition: all 0.1s ease;
+  width: auto;
+  min-width: 120px; /* 최소 너비 확보 */
+  
+  /* 텍스트 중앙 정렬 */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 button:hover {
-  background: #FE818D; 
-  transform: translateY(-3px) scale(1.05); 
-  box-shadow: 0 6px 15px rgba(254, 129, 141, 0.3);
+  background: var(--bg-block);
+  border-color: #A09F9C;
+  transform: none; /* 크기 커짐 제거 */
+  box-shadow: none;
 }
 
-/* 엑셀 및 일반 버튼 스타일 */
-.start-button { background: #78B3FF; }
-.start-button:hover { background: #FE818D; transform: translateY(-3px); }
+button:active {
+  background: #EFEFEF;
+}
 
-.stop-button { background: #FE818D; }
-.stop-button:hover { background: #e74c3c; transform: translateY(-3px); }
+/* 시작/연결 버튼 (브랜드 컬러 강조) */
+.start-button {
+  color: var(--brand-color);
+  border-color: var(--brand-color);
+  background: #fff;
+}
+.start-button:hover {
+  background: var(--brand-bg); /* 연한 파란 배경 */
+  color: var(--brand-color);
+}
 
+/* 정지/해제 버튼 (붉은색 강조) */
+.stop-button {
+  color: var(--color-red);
+  border-color: #E0E0E0;
+  background: #fff;
+}
+.stop-button:hover {
+  background: var(--bg-red-light);
+  border-color: var(--color-red);
+}
+
+/* 엑셀 버튼 (텍스트 링크 스타일) */
 .excel-button {
-  background: #27ae60; /* 엑셀 색상 */
-  font-size: 0.9rem;
-  padding: 0.8rem;
-}
-.excel-button:hover { background: #2ecc71; }
-
-/* ======== 음성 인식 버튼 (마이크) 및 파동 애니메이션 ======== */
-.mic-button {
-  width: 100px !important;
-  height: 100px !important;
-  border-radius: 50%;
-  background: #78B3FF;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 3rem;
-  color: white;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  transition: transform 0.1s ease, background 0.2s ease;
-}
-
-/* 버튼 눌렀을 때 활성화 상태 */
-.mic-button.active {
-  background: #FE818D;
-  transform: scale(0.95);
-}
-
-/* 눌렀을 때 주변으로 퍼지는 파동 효과 */
-.mic-button.active::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--text-gray);
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 4px;
   width: 100%;
-  height: 100%;
-  background: rgba(254, 129, 141, 0.4);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  z-index: -1;
-  animation: ripple 1.2s infinite cubic-bezier(0, 0.2, 0.8, 1);
+  max-width: 300px;
+  padding: 0.5rem;
+}
+.excel-button:hover {
+  background: transparent;
+  color: var(--brand-color);
 }
 
-.mic-button.active::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  background: rgba(254, 129, 141, 0.2);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  z-index: -1;
-  animation: ripple 1.2s infinite 0.6s cubic-bezier(0, 0.2, 0.8, 1);
-}
-
-@keyframes ripple {
-  0% {
-    width: 100px;
-    height: 100px;
-    opacity: 1;
-  }
-  100% {
-    width: 250px;
-    height: 250px;
-    opacity: 0;
-  }
-}
-
-/* ================================================== */
-
+/* 6. 입력창 (깔끔하게) */
 input {
   width: 100%;
-  background: #ecf0f1;
-  color: #2c3e50;
-  border: 1px solid #ccc;
-  padding: 1rem;
-  border-radius: 12px;
+  max-width: 250px;
+  background: #FFFFFF;
+  color: var(--text-body);
+  border: 1px solid #D3D1CB;
+  padding: 0.7rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center;
+  box-shadow: none;
 }
-input:focus { border-color: #78B3FF; }
+
+input:focus {
+  outline: none;
+  border-color: var(--brand-color);
+  box-shadow: 0 0 0 2px var(--brand-bg); /* 포커스 링 */
+}
+
+/* 7. 상태 메시지 박스 */
+#bluetoothStatus, #recognitionStatus, #recognitionResult, #sentDataDisplay {
+  background: #FFFFFF;
+  border: 1px solid var(--border-line);
+  padding: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-body);
+  margin-top: 10px;
+  width: 100%;
+  box-shadow: none;
+}
 
 #bluetoothStatus {
-  padding: 1rem;
-  font-size: 1rem;
-  text-align: center;
-  border-radius: 12px;
+  background: var(--brand-bg);
+  color: var(--brand-color);
+  border-color: transparent;
   font-weight: 600;
-  background: #f9f9f9;
-  color: #FE818D;
 }
 
-#recognitionStatus, #recognitionResult, #sentDataDisplay {
-  padding: 1.4rem; 
-  font-size: 1rem;
-  text-align: center;
-  font-weight: 600;
-  border-radius: 20px;
-  line-height: 0.98; 
+#recognitionResult {
+  background: #FFFFFF;
+  border: 1px solid var(--border-line);
 }
-#recognitionStatus { border: none; background: none; }
-#recognitionResult, #sentDataDisplay { background: #f5f6f5; border: 1px solid #FE818D; }
 
+/* 8. 데이터 테이블 (심플 그리드) */
 #command-table-container {
   width: 100%;
-  max-width: 800px;
-  margin: 20px auto;
-  overflow-x: auto;
-  border-radius: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-line);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   background-color: #fff;
-  border: 1px solid #ddd;
 }
 
 th {
-  background-color: #78B3FF;
-  color: #fff;
-  padding: 15px;
-  border: 1px solid #000;
-  white-space: nowrap;
+  background-color: #FAFAFA; /* 헤더는 아주 연한 회색 */
+  color: var(--text-gray);
+  padding: 12px;
+  border-bottom: 1px solid var(--border-line);
+  border-right: 1px solid var(--border-line);
+  font-weight: 500;
+  font-size: 0.85rem;
 }
 
 td {
-  border: 1px solid #ddd;
-  padding: 10px;
+  padding: 12px;
+  border-bottom: 1px solid var(--border-line);
+  border-right: 1px solid var(--border-line);
   text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--text-body);
 }
 
-#user-command-ui {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
+th:last-child, td:last-child { border-right: none; }
+tr:last-child td { border-bottom: none; }
 
-#voice-recognition-ui {
+/* 9. 마이크 버튼 (깔끔한 원형 라인) */
+.mic-button {
+  width: 100px !important;
+  height: 100px !important;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2px solid var(--brand-color);
+  color: var(--brand-color);
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  font-size: 2.5rem;
+  margin: 10px auto;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 12px rgba(99, 184, 230, 0.15); /* 부드러운 파란 그림자 */
+  transition: all 0.2s ease;
 }
 
+.mic-button:hover {
+  transform: translateY(-2px);
+  background: var(--brand-bg);
+  box-shadow: 0 6px 16px rgba(99, 184, 230, 0.25);
+}
+
+/* 활성화 상태 (누르고 있을 때) */
+.mic-button.active {
+  background: var(--brand-color);
+  color: #FFFFFF;
+  transform: scale(0.95);
+  box-shadow: 0 0 0 4px var(--brand-bg); /* 파동 효과를 정적인 링으로 변경 (깔끔함) */
+}
+
+/* 기존 파동 애니메이션 제거 (노션 스타일엔 안 어울림) */
+.mic-button.active::after, 
+.mic-button.active::before {
+  display: none;
+}
+
+/* 10. 푸터 */
 footer {
   width: 100%;
-  padding: 1rem 2vw;
-  background: #ffffff;
+  padding: 2rem;
+  background: #FFFFFF;
   text-align: center;
-  color: #7f8c8d;
-  font-size: 0.9rem;
+  color: var(--text-gray);
+  font-size: 0.85rem;
   margin-top: auto;
+  border-top: 1px solid var(--border-line);
 }
 
-@media only screen and (min-width: 901px) {
-  main {
-    flex-direction: row;
-    justify-content: center;
-    align-items: flex-start;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
+/* 11. 반응형 레이아웃 (PC 화면) */
+@media only screen and (min-width: 900px) {
   .controls {
-    width: 50vw;
-    max-height: 80vh; 
-    overflow-y: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2단 그리드 */
+    gap: 1.5rem;
   }
-  button { width: 30%; }
-  .mic-button { width: 100px !important; }
+  
+  /* 마이크 패널과 테이블 패널 배치 최적화 */
+  #voice-recognition-group {
+    grid-row: span 2; /* 세로로 길게 */
+    justify-content: center;
+  }
+  
+  #command-table-group {
+    grid-column: span 2; /* 가로로 길게 */
+  }
+
+  button { width: auto; }
 }
