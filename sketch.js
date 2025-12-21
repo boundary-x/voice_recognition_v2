@@ -1,18 +1,15 @@
 /**
  * sketch.js
- * AI Voice Controller Logic
  */
 
-// Bluetooth UUIDs
 const UART_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
 const UART_TX_CHARACTERISTIC_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
 const UART_RX_CHARACTERISTIC_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
-// Variables
 let bluetoothDevice = null;
 let rxCharacteristic = null;
 let isConnected = false;
-let bluetoothStatus = "연결되지 않음";
+let bluetoothStatus = "연결 대기 중"; // 기본 텍스트
 
 let recognition;
 let transcript = ""; 
@@ -23,7 +20,6 @@ let isRecognitionStarted = false;
 let isPressing = false;           
 let lastCommandTime = 0;          
 
-// Default Commands
 const voiceCommands = {
   forward: ["전진", "앞으로", "직진", "출발"],
   backward: ["뒤로", "후진"],
@@ -49,7 +45,6 @@ function setup() {
   }
 }
 
-/** [1] Bluetooth UI */
 function createBluetoothUI() {
   const statusElement = select("#bluetoothStatus");
   if (statusElement) statusElement.html(`상태: ${bluetoothStatus}`);
@@ -66,7 +61,6 @@ function createBluetoothUI() {
   }
 }
 
-/** [2] Command Table */
 function createCommandTable() {
   const tableContainer = select("#command-table-container");
   if (tableContainer) {
@@ -79,14 +73,12 @@ function createCommandTable() {
     header.child(createElement("th", "전송 데이터 (Outputs)"));
     table.child(header);
 
-    // Default
     Object.entries(voiceCommands).forEach(([command, phrases]) => {
       const row = createElement("tr");
       row.child(createElement("td", phrases.join(", ")));
       row.child(createElement("td", command));
       table.child(row);
     });
-    
     updateCommandTable(); 
   }
 }
@@ -100,7 +92,6 @@ function updateCommandTable() {
     header.child(createElement("th", "전송 데이터 (Outputs)"));
     table.child(header);
 
-    // Default
     Object.entries(voiceCommands).forEach(([command, phrases]) => {
       const row = createElement("tr");
       row.child(createElement("td", phrases.join(", ")));
@@ -108,18 +99,16 @@ function updateCommandTable() {
       table.child(row);
     });
 
-    // Custom
     Object.entries(userCommands).forEach(([command, data]) => {
       const row = createElement("tr");
       row.child(createElement("td", command));
       row.child(createElement("td", data[0]));
-      row.style('background-color', '#F1F8E9'); // Light Green highlight
+      row.style('background-color', '#F1F8E9'); 
       table.child(row);
     });
   }
 }
 
-/** [3] User Command UI */
 function createUserCommandUI() {
   const inputContainer = select("#user-command-ui");
   if (inputContainer) {
@@ -144,7 +133,6 @@ function createUserCommandUI() {
     });
     inputContainer.child(addButton);
 
-    // Line break
     inputContainer.child(createElement('div').style('width','100%').style('height','10px'));
 
     const exportBtn = createButton("엑셀 내보내기").addClass("excel-button");
@@ -200,14 +188,12 @@ function importCommandsFromExcel(e) {
   reader.readAsArrayBuffer(file);
 }
 
-/** [4] Voice Control UI (Clean SVG Icon) */
 function createVoiceRecognitionUI() {
   const container = select("#voice-recognition-ui");
   if (container) {
     container.html(''); 
 
     const micBtn = createButton("").addClass("mic-button");
-    // Insert Material Design Mic Icon (SVG)
     micBtn.html(`
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
@@ -295,7 +281,6 @@ function displaySentData() {
   }
 }
 
-/** [5] Speech Recognition Logic */
 function setupVoiceRecognition() {
   if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
     recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -313,7 +298,6 @@ function setupVoiceRecognition() {
       transcript = currentTranscript.trim();
       displayRecognitionStatus();
 
-      // Quick match check (Interim)
       if (Date.now() - lastCommandTime > 800) {
         if (checkAndSendCommand(transcript)) {
           lastCommandTime = Date.now();
@@ -363,7 +347,27 @@ function checkAndSendCommand(text) {
   return false;
 }
 
-/** [6] Bluetooth Logic */
+// [수정] 블루투스 상태 업데이트 함수
+// type: 'default', 'connected', 'error'
+function updateBluetoothStatusUI(type) {
+  const el = select("#bluetoothStatus");
+  if (el) {
+    // 기존 클래스 제거
+    el.removeClass("status-connected");
+    el.removeClass("status-error");
+
+    el.html(`상태: ${bluetoothStatus}`);
+
+    // 상태별 클래스 추가
+    if (type === 'connected') {
+      el.addClass("status-connected");
+    } else if (type === 'error') {
+      el.addClass("status-error");
+    }
+    // default는 CSS에서 지정한 기본 회색 스타일 적용
+  }
+}
+
 async function connectBluetooth() {
   try {
     bluetoothDevice = await navigator.bluetooth.requestDevice({
@@ -374,7 +378,10 @@ async function connectBluetooth() {
     const service = await server.getPrimaryService(UART_SERVICE_UUID);
     rxCharacteristic = await service.getCharacteristic(UART_RX_CHARACTERISTIC_UUID);
     isConnected = true;
+    
+    // [성공] 녹색 표시
     bluetoothStatus = `${bluetoothDevice.name} 연결됨`;
+    updateBluetoothStatusUI('connected');
 
     if (!isRecognitionStarted) {
         try {
@@ -384,9 +391,10 @@ async function connectBluetooth() {
     }
   } catch (error) {
     console.error("Connection failed", error);
-    bluetoothStatus = "연결 실패";
+    // [실패] 빨간색 표시
+    bluetoothStatus = "연결 실패 (다시 시도해주세요)";
+    updateBluetoothStatusUI('error');
   }
-  updateBluetoothStatus();
 }
 
 function disconnectBluetooth() {
@@ -394,21 +402,15 @@ function disconnectBluetooth() {
     bluetoothDevice.gatt.disconnect();
   }
   isConnected = false;
-  bluetoothStatus = "연결 해제됨";
   bluetoothDevice = null;
   rxCharacteristic = null;
   
+  // [해제] 기본 회색으로 복귀 (혹은 실패처럼 빨간색을 원하시면 'error' 전달)
+  bluetoothStatus = "연결 해제됨";
+  updateBluetoothStatusUI('default');
+  
   if(isRecognitionStarted) {
       try { recognition.stop(); isRecognitionStarted = false; } catch(e){}
-  }
-  updateBluetoothStatus();
-}
-
-function updateBluetoothStatus() {
-  const el = select("#bluetoothStatus");
-  if (el) {
-    el.html(`상태: ${bluetoothStatus}`);
-    // 스타일 변경은 CSS 클래스로 제어 권장하나 여기서는 텍스트 업데이트에 집중
   }
 }
 
