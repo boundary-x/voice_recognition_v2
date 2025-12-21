@@ -1,5 +1,6 @@
 /**
  * sketch.js
+ * Boundary X Voice Controller Logic
  */
 
 const UART_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
@@ -9,7 +10,7 @@ const UART_RX_CHARACTERISTIC_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 let bluetoothDevice = null;
 let rxCharacteristic = null;
 let isConnected = false;
-let bluetoothStatus = "연결 대기 중"; // 기본 텍스트
+let bluetoothStatus = "연결 대기 중"; 
 
 let recognition;
 let transcript = ""; 
@@ -325,7 +326,7 @@ function setupVoiceRecognition() {
       }
     };
   } else {
-    alert("이 브라우저는 음성 인식을 지원하지 않습니다. Chrome을 사용해주세요.");
+    alert("이 브라우저는 음성 인식을 지원하지 않습니다. Chrome 또는 edge 브라우저를 사용해주세요.");
   }
 }
 
@@ -347,24 +348,19 @@ function checkAndSendCommand(text) {
   return false;
 }
 
-// [수정] 블루투스 상태 업데이트 함수
-// type: 'default', 'connected', 'error'
+// UI Color Update Logic
 function updateBluetoothStatusUI(type) {
   const el = select("#bluetoothStatus");
   if (el) {
-    // 기존 클래스 제거
     el.removeClass("status-connected");
     el.removeClass("status-error");
-
     el.html(`상태: ${bluetoothStatus}`);
 
-    // 상태별 클래스 추가
     if (type === 'connected') {
       el.addClass("status-connected");
     } else if (type === 'error') {
       el.addClass("status-error");
     }
-    // default는 CSS에서 지정한 기본 회색 스타일 적용
   }
 }
 
@@ -379,7 +375,7 @@ async function connectBluetooth() {
     rxCharacteristic = await service.getCharacteristic(UART_RX_CHARACTERISTIC_UUID);
     isConnected = true;
     
-    // [성공] 녹색 표시
+    // Connected (Green)
     bluetoothStatus = `${bluetoothDevice.name} 연결됨`;
     updateBluetoothStatusUI('connected');
 
@@ -391,7 +387,7 @@ async function connectBluetooth() {
     }
   } catch (error) {
     console.error("Connection failed", error);
-    // [실패] 빨간색 표시
+    // Error (Red)
     bluetoothStatus = "연결 실패 (다시 시도해주세요)";
     updateBluetoothStatusUI('error');
   }
@@ -405,7 +401,7 @@ function disconnectBluetooth() {
   bluetoothDevice = null;
   rxCharacteristic = null;
   
-  // [해제] 기본 회색으로 복귀 (혹은 실패처럼 빨간색을 원하시면 'error' 전달)
+  // Default (Grey)
   bluetoothStatus = "연결 해제됨";
   updateBluetoothStatusUI('default');
   
