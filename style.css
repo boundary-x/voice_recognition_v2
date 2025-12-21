@@ -1,4 +1,4 @@
-/* style.css - Boundary X: Modern Mono Tech Design */
+/* style.css - Boundary X: Final Modern Mono Tech */
 
 :root {
   /* Palette */
@@ -11,7 +11,8 @@
   --text-main: #111111;     /* 본문 텍스트 */
   --text-sub: #666666;      /* 설명 텍스트 */
   
-  --danger: #EA4335;        /* 포인트 컬러 (빨강) */
+  --danger: #EA4335;        /* 포인트/에러 컬러 (빨강) */
+  --success: #137333;       /* 성공 컬러 (녹색) */
   
   /* Shapes */
   --radius-pill: 50px;      /* 알약 모양 (완전 둥근 모서리) */
@@ -103,7 +104,7 @@ main {
   border: 1px solid var(--border-color);
 }
 
-/* Title Style: Vertical Bar */
+/* Title Style: Vertical Bar (Not a button) */
 .control-group h3 {
   background: transparent;
   color: #000000;
@@ -211,14 +212,14 @@ input:focus {
 /* Dynamic Status Colors */
 .status-connected {
   background-color: #E6F4EA !important;
-  color: #137333 !important;
-  border-color: #137333 !important;
+  color: var(--success) !important;
+  border-color: var(--success) !important;
 }
 
 .status-error {
   background-color: #FCE8E6 !important;
-  color: #C5221F !important;
-  border-color: #C5221F !important;
+  color: var(--danger) !important;
+  border-color: var(--danger) !important;
 }
 
 #recognitionStatus, #recognitionResult, #sentDataDisplay {
@@ -286,7 +287,7 @@ tr:last-child td { border-bottom: none; }
   padding: 2rem 0;
 }
 
-/* Large Mic Button */
+/* Large Mic Button (120px) */
 .mic-button {
   width: 120px !important;
   height: 120px !important;
@@ -320,7 +321,7 @@ tr:last-child td { border-bottom: none; }
 footer {
   background-color: #000000;
   color: #FFFFFF;
-  padding: 4rem 5vw 2rem;
+  padding: 4rem 5vw 4rem;
   border-top: 1px solid #222;
   margin-top: auto;
   font-size: 0.9rem;
@@ -331,19 +332,20 @@ footer {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
 }
 
 .footer-top {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 3rem;
+  gap: 4rem;
 }
 
 .footer-info {
   flex: 1;
-  min-width: 250px;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
 }
 
 .footer-logo {
@@ -353,14 +355,25 @@ footer {
   color: #FFFFFF;
 }
 
+/* Slogan Style */
+.slogan {
+  font-size: 0.95rem;
+  color: #CCCCCC;
+  font-weight: 400;
+  font-style: normal; /* No Italic */
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
 address {
   font-style: normal;
-  color: #999;
+  color: #888;
   line-height: 1.6;
 }
 
 .copyright {
-  margin-top: 1rem;
+  margin-top: 0.8rem;
   font-size: 0.8rem;
   color: #666;
 }
@@ -408,30 +421,13 @@ address {
   color: #666;
 }
 
-.footer-bottom {
-  border-top: 1px solid #222;
-  padding-top: 2rem;
-  text-align: left;
-}
-
-.slogan {
-  font-size: 0.95rem;
-  color: #888;
-  font-weight: 400;
-  font-style: italic;
-  letter-spacing: -0.01em;
-}
-
 @media (max-width: 768px) {
   .footer-top {
     flex-direction: column;
-    gap: 2rem;
+    gap: 3rem;
   }
   .footer-links {
-    gap: 2rem;
+    gap: 2.5rem;
     flex-direction: column;
-  }
-  .footer-bottom {
-    text-align: center;
   }
 }
