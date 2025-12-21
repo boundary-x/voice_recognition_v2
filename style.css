@@ -1,28 +1,25 @@
 /* 1. 폰트 및 기본 설정 */
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* Brand Identity Colors */
+  /* Brand Colors */
   --brand-color: #63B8E6;        /* 바운더리엑스 블루 */
-  --brand-light: #E3F2FD;        /* 아주 연한 블루 (배경용) */
-  --brand-hover: #4FA8D6;        /* 버튼 호버 색상 */
+  --brand-bg: #EAF6FB;           /* 블루 배경 (선택 상태 등) */
   
-  /* Light Mode Base */
-  --bg-base: #FFFFFF;            /* 전체 배경: 완전한 흰색 */
-  --panel-bg: #F8F9FA;           /* 카드 배경: 아주 연한 회색 (Google Style) */
-  --border-line: #E1E3E6;        /* 테두리: 연한 회색 */
+  /* Notion Palette */
+  --bg-page: #FFFFFF;            /* 전체 배경: 흰색 */
+  --bg-block: #F7F7F5;           /* 블록(카드) 배경: 노션 회색 */
+  --border-color: #E9E9E7;       /* 테두리: 아주 연한 회색 */
   
   /* Text Colors */
-  --text-primary: #202124;       /* 진한 회색 (본문) */
-  --text-secondary: #5F6368;     /* 중간 회색 (설명) */
+  --text-title: #37352F;         /* 제목: 노션 기본 검정 */
+  --text-body: #37352F;          /* 본문 */
+  --text-gray: #787774;          /* 설명/비활성 텍스트 */
   
-  /* Functional Colors */
-  --success: #34A853;            /* 구글 그린 */
-  --error: #EA4335;              /* 구글 레드 */
-  
-  /* Shadow */
-  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.04); /* 부드러운 그림자 */
+  /* Functional */
+  --color-red: #E03E3E;
+  --bg-red-light: #FBE4E4;
 }
 
 * {
@@ -30,38 +27,10 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Pretendard', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* 커스텀 스크롤바 (Light) */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-base);
-}
-::-webkit-scrollbar-thumb {
-  background: #DADCE0;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #BDC1C6;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  background-color: var(--bg-base);
-  color: var(--text-primary);
-  overflow-x: hidden;
-  /* 아주 미세한 그리드 패턴으로 테크 느낌 추가 */
-  background-image: radial-gradient(#E1E3E6 1px, transparent 1px);
-  background-size: 32px 32px;
-}
-
-/* 캔버스 숨김 */
+/* 캔버스 숨김 (필수) */
 .canvas-container, #p5-container {
   display: none !important;
 }
@@ -69,295 +38,298 @@ canvas {
   display: none !important;
 }
 
-/* 2. 헤더 (Clean & Sticky) */
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  color: var(--text-body);
+  overflow-x: hidden;
+}
+
+/* 2. 헤더 (심플한 문서 제목 느낌) */
 header {
   width: 100%;
-  padding: 1.2rem 5vw;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border-line);
+  max-width: 900px; /* 노션 페이지 폭과 유사하게 */
+  padding: 1.5rem 20px;
+  background: var(--bg-page);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky;
+  position: sticky; /* 스크롤 시 상단 고정 */
   top: 0;
   z-index: 100;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
 
 .title {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-title);
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  letter-spacing: -0.03em;
+  gap: 10px;
 }
 
 .title img {
-  height: 1.8rem;
+  height: 1.4rem;
   width: auto;
+  border-radius: 4px; /* 아이콘도 살짝 둥글게 */
 }
 
 .back-button {
-  padding: 0.6rem 1.4rem;
-  background: #fff;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-line);
-  border-radius: 99px;
+  padding: 6px 12px;
+  color: var(--text-gray);
+  border: 1px solid transparent;
+  border-radius: 4px;
   text-decoration: none;
   font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  transition: background 0.2s;
 }
 
 .back-button:hover {
-  border-color: var(--brand-color);
-  color: var(--brand-color);
-  background: var(--brand-light);
+  background: var(--bg-block);
+  color: var(--text-title);
 }
 
-/* 3. 레이아웃 */
+/* 3. 메인 레이아웃 */
 main {
   width: 100%;
-  max-width: 1100px;
+  max-width: 900px; /* 노션 스타일의 중앙 집중형 폭 */
   display: flex;
   flex-direction: column;
-  padding: 2.5rem 5vw;
+  padding: 2rem 20px;
   gap: 2rem;
 }
 
-.controls {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  width: 100%;
-}
-
-/* 4. 컨트롤 패널 (Card Style - Light Gray) */
+/* 4. 섹션 (Callout Block 스타일) */
 .control-group {
-  background: var(--panel-bg); /* 아주 연한 회색 */
-  border: 1px solid var(--border-line);
-  border-radius: 16px;
-  padding: 2.5rem 2rem;
-  box-shadow: var(--shadow-soft);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: var(--bg-block); /* 노션 특유의 연회색 배경 */
+  border-radius: 6px;          /* 모서리는 조금만 둥글게 */
+  padding: 1.5rem;
+  margin-bottom: 0;
+  border: 1px solid transparent; /* 테두리 없이 깔끔하게 */
   
-  /* 내부 요소 중앙 정렬을 위한 Flex 설정 */
+  /* 내부 정렬 */
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* 중앙 정렬 */
   text-align: center;
 }
 
 .control-group:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
-  border-color: var(--brand-color);
+  /* 호버 시 아주 살짝 테두리만 생김 */
+  border-color: #D3D1CB; 
 }
 
 .control-group h3 {
-  font-size: 1.2rem;
+  width: 100%;
+  font-size: 1rem;
   margin-bottom: 0.5rem;
-  color: var(--text-primary);
-  font-weight: 700;
+  color: var(--text-title);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 제목 중앙 */
+  gap: 8px;
 }
 
 .control-group p {
-  font-size: 0.95rem;
-  color: var(--text-secondary);
+  font-size: 0.9rem;
+  color: var(--text-gray);
   margin-bottom: 1.5rem;
   line-height: 1.5;
 }
 
-/* [요청사항] 버튼 그룹 중앙 정렬 */
+/* 5. 버튼 (Flat & Minimal) */
+/* 버튼 그룹 정렬 */
 .button-group, #user-command-ui, #bluetooth-control-buttons {
   display: flex;
-  justify-content: center; /* 가로 중앙 정렬 */
-  align-items: center;     /* 세로 중앙 정렬 */
+  justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
 }
 
-/* 5. 버튼 스타일 (Clean Outline & Filled) */
 button {
   background: #FFFFFF;
-  color: var(--brand-color);
-  border: 1px solid var(--brand-color);
-  padding: 0.9rem 1.8rem;
+  color: var(--text-body);
+  border: 1px solid #D3D1CB; /* 진한 회색 테두리 */
+  padding: 0.6rem 1.2rem;
   font-family: 'Pretendard', sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  border-radius: 10px;
-  transition: all 0.2s ease;
-  min-width: 140px;
-  font-size: 0.95rem;
+  border-radius: 4px; /* 노션 버튼 스타일 */
+  font-size: 0.9rem;
+  transition: all 0.1s ease;
+  min-width: 120px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* 아주 미세한 그림자 */
   
-  /* 버튼 텍스트 중앙 정렬 보장 */
   display: inline-flex;
   justify-content: center;
   align-items: center;
 }
 
 button:hover {
-  background: var(--brand-color);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(99, 184, 230, 0.3);
-  transform: translateY(-1px);
+  background: var(--bg-block);
+  border-color: #A09F9C;
 }
 
-/* 멈춤/해제 버튼 (Red Accent) */
-.stop-button {
-  color: var(--error);
-  border-color: var(--error);
-}
-.stop-button:hover {
-  background: var(--error);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(234, 67, 53, 0.3);
-}
-
-/* 엑셀 버튼 (Subtle) */
-.excel-button {
-  width: 100%;
-  max-width: 300px; /* 너무 길어지지 않게 제한 */
-  margin-top: 8px;
-  border: 1px dashed #BDC1C6;
-  color: var(--text-secondary);
-  background: transparent;
-}
-.excel-button:hover {
-  border-style: solid;
-  border-color: var(--success);
-  color: var(--success);
-  background: #E6F4EA;
+button:active {
+  transform: translateY(1px);
   box-shadow: none;
 }
 
-/* 6. 입력 필드 및 테이블 */
+/* 주요 액션 버튼 (브랜드 컬러) */
+.start-button {
+  color: var(--brand-color);
+  border-color: var(--brand-color);
+  background: #fff;
+}
+.start-button:hover {
+  background: var(--brand-bg);
+}
+
+/* 정지 버튼 (붉은색) */
+.stop-button {
+  color: var(--color-red);
+  border-color: #E0E0E0;
+}
+.stop-button:hover {
+  background: var(--bg-red-light);
+  border-color: var(--color-red);
+}
+
+/* 엑셀 버튼 (텍스트형 버튼 느낌) */
+.excel-button {
+  width: 100%;
+  max-width: 250px;
+  background: transparent;
+  border: none;
+  color: var(--text-gray);
+  box-shadow: none;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.excel-button:hover {
+  background: transparent;
+  color: var(--brand-color);
+  border: none;
+}
+
+/* 6. 입력창 (Understated) */
 input {
   width: 100%;
-  max-width: 300px; /* 입력창 너무 길지 않게 */
-  background: #fff;
-  color: var(--text-primary);
-  border: 1px solid var(--border-line);
-  padding: 1rem;
-  border-radius: 8px;
+  max-width: 250px;
+  background: #FFFFFF;
+  color: var(--text-body);
+  border: 1px solid #D3D1CB;
+  padding: 0.6rem 0.8rem;
+  border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.9rem;
-  transition: all 0.2s;
-  text-align: center; /* 텍스트 중앙 정렬 */
+  text-align: center;
 }
 
 input:focus {
   outline: none;
   border-color: var(--brand-color);
-  box-shadow: 0 0 0 3px var(--brand-light);
+  box-shadow: 0 0 0 2px var(--brand-bg);
 }
 
+/* 7. 테이블 (Simple Grid) */
 table {
   width: 100%;
   border-collapse: collapse;
   font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
   background: #fff;
-  border-radius: 8px;
-  overflow: hidden; /* 모서리 둥글게 */
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border: 1px solid var(--border-color);
 }
 th {
-  background: #F1F3F4;
-  color: var(--text-secondary);
-  font-weight: 600;
-  padding: 14px;
-  text-align: center;
-  font-size: 0.85rem;
-  border-bottom: 1px solid var(--border-line);
+  background: #FAFAFA; /* 헤더는 아주 연하게 */
+  color: var(--text-gray);
+  font-weight: 500;
+  padding: 10px;
+  border-bottom: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
 }
 td {
-  padding: 14px;
-  text-align: center;
-  font-size: 0.9rem;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-line);
+  padding: 10px;
+  color: var(--text-body);
+  border-bottom: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
 }
 tr:last-child td { border-bottom: none; }
-tr:hover td { background: var(--brand-light); }
+th:last-child, td:last-child { border-right: none; }
 
-/* 7. 상태 표시창 (모던 박스) */
+/* 8. 상태 메시지 (Code Block Style) */
 #bluetoothStatus, #recognitionStatus, #recognitionResult, #sentDataDisplay {
-  background: #fff;
-  border: 1px solid var(--border-line);
-  color: var(--text-primary);
-  padding: 1.2rem;
-  border-radius: 12px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.95rem;
-  margin-top: 10px;
   width: 100%;
-  
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  color: var(--text-body);
+  padding: 0.8rem;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  margin-top: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-}
-#bluetoothStatus { 
-  font-weight: 600;
-  color: var(--brand-color);
-  background: var(--brand-light);
-  border-color: transparent;
+  gap: 8px;
 }
 
-/* 8. 마이크 버튼 (심플 & 임팩트) */
+#bluetoothStatus {
+  color: var(--brand-color);
+  background: var(--brand-bg);
+  border-color: transparent;
+  font-weight: 600;
+}
+
+/* 9. 마이크 버튼 (Clean Circle) */
 .mic-button {
-  width: 110px !important;
-  height: 110px !important;
+  width: 90px !important;
+  height: 90px !important;
   border-radius: 50%;
-  background: #fff;
+  background: #FFFFFF;
   border: 2px solid var(--brand-color);
   color: var(--brand-color);
-  font-size: 2.8rem;
+  font-size: 2.5rem;
   margin: 10px auto;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(99, 184, 230, 0.2);
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.2s ease;
   
-  display: flex;            /* 아이콘 중앙 정렬 */
+  display: flex;
   justify-content: center;
   align-items: center;
+  
+  box-shadow: 0 2px 8px rgba(99, 184, 230, 0.2);
 }
 
 .mic-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(99, 184, 230, 0.3);
+  transform: translateY(-2px);
+  background: var(--brand-bg);
 }
 
 .mic-button.active {
   background: var(--brand-color);
-  color: #fff;
-  transform: scale(0.95);
-  box-shadow: 0 0 0 8px var(--brand-light); /* 파동 느낌을 보더로 표현 */
+  color: #FFFFFF;
   border-color: var(--brand-color);
+  transform: scale(0.95);
+  box-shadow: 0 0 0 4px var(--brand-bg); /* 파동 효과를 링으로 표현 */
 }
 
-/* PC 레이아웃 (Grid 적용) */
-@media (min-width: 900px) {
+/* 반응형 (PC Grid) */
+@media (min-width: 768px) {
   .controls {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 1:1 비율 */
-    gap: 2rem;
-    align-items: start;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
   }
   
-  /* 마이크 패널 강조 */
-  #voice-recognition-group {
-    grid-row: span 2; 
-    justify-content: center;
-  }
-  
-  /* 테이블 영역 넓게 */
   #command-table-group {
     grid-column: span 2;
   }
@@ -365,11 +337,10 @@ tr:hover td { background: var(--brand-light); }
 
 footer {
   margin-top: auto;
-  padding: 3rem;
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  border-top: 1px solid var(--border-line);
+  padding: 2rem;
+  color: var(--text-gray);
+  font-size: 0.8rem;
   width: 100%;
   text-align: center;
-  background: #FAFAFA;
+  border-top: 1px solid var(--border-color);
 }
