@@ -1,4 +1,4 @@
-/* style.css - Final: Vertical Bar Title & Status Colors & Big Mic */
+/* style.css - Boundary X: Modern Mono Tech Design */
 
 :root {
   /* Palette */
@@ -103,27 +103,16 @@ main {
   border: 1px solid var(--border-color);
 }
 
-/* =========================================
-   [수정됨] 타이틀: 좌측 버티컬 바 스타일
-   - 버튼 느낌을 제거하고 전문적인 섹션 헤더 느낌 강조
-   ========================================= */
+/* Title Style: Vertical Bar */
 .control-group h3 {
   background: transparent;
   color: #000000;
-  
-  /* 왼쪽 강조 선 */
   border-left: 6px solid #000000;
   padding-left: 1rem;
-  
-  /* 폰트 스타일 */
   font-size: 1.3rem;
   font-weight: 800; 
   margin-bottom: 1rem;
   line-height: 1.1;
-  
-  /* 기존 버튼 스타일 제거 */
-  box-shadow: none;
-  border-radius: 0;
   display: flex;
   align-items: center;
 }
@@ -213,14 +202,13 @@ input:focus {
   font-size: 1rem;
   text-align: center;
   font-weight: 700;
-  /* 기본 상태 */
   background-color: #F1F3F4;
   color: #333;
   border: 1px solid var(--border-color);
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* 상태별 색상 */
+/* Dynamic Status Colors */
 .status-connected {
   background-color: #E6F4EA !important;
   color: #137333 !important;
@@ -298,7 +286,7 @@ tr:last-child td { border-bottom: none; }
   padding: 2rem 0;
 }
 
-/* 큰 마이크 버튼 */
+/* Large Mic Button */
 .mic-button {
   width: 120px !important;
   height: 120px !important;
@@ -328,12 +316,122 @@ tr:last-child td { border-bottom: none; }
   fill: white; 
 }
 
-/* Footer */
+/* Detailed Footer */
 footer {
+  background-color: #000000;
+  color: #FFFFFF;
+  padding: 4rem 5vw 2rem;
+  border-top: 1px solid #222;
   margin-top: auto;
-  padding: 2rem;
-  text-align: center;
-  font-size: 0.85rem;
-  background: #000000;
+  font-size: 0.9rem;
+}
+
+.footer-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 3rem;
+}
+
+.footer-info {
+  flex: 1;
+  min-width: 250px;
+}
+
+.footer-logo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #FFFFFF;
+}
+
+address {
+  font-style: normal;
+  color: #999;
+  line-height: 1.6;
+}
+
+.copyright {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.footer-links {
+  display: flex;
+  gap: 4rem;
+  flex-wrap: wrap;
+}
+
+.link-column h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 1.2rem;
+}
+
+.link-column ul {
+  list-style: none;
+  padding: 0;
+}
+
+.link-column li {
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.link-column a {
+  text-decoration: none;
+  color: #CCCCCC;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.link-column a:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.link-desc {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.footer-bottom {
+  border-top: 1px solid #222;
+  padding-top: 2rem;
+  text-align: left;
+}
+
+.slogan {
+  font-size: 0.95rem;
   color: #888;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 768px) {
+  .footer-top {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .footer-links {
+    gap: 2rem;
+    flex-direction: column;
+  }
+  .footer-bottom {
+    text-align: center;
+  }
 }
