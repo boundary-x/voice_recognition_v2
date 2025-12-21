@@ -172,7 +172,7 @@ function updateCommandTable() {
       const row = createElement("tr");
       row.child(createElement("td", command));
       row.child(createElement("td", data[0]));
-      row.style('background-color', '#fff9c4'); 
+      row.style('background-color', '#ebf4f5'); 
       table.child(row);
     });
   }
@@ -492,6 +492,7 @@ async function sendBluetoothData(data) {
     console.error("Send error:", e);
   }
 }
+
 
 
 
