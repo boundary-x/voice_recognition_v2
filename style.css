@@ -1,4 +1,4 @@
-/* style.css - Tech Pill & Big Mic & Status Colors */
+/* style.css - Final: Vertical Bar Title & Status Colors & Big Mic */
 
 :root {
   /* Palette */
@@ -93,7 +93,7 @@ main {
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 32px; /* 카드 간 간격 조금 더 넓힘 */
+  gap: 32px;
 }
 
 .control-group {
@@ -104,26 +104,34 @@ main {
 }
 
 /* =========================================
-   [수정] 아이디어 1. Tech Pill 스타일 적용
+   [수정됨] 타이틀: 좌측 버티컬 바 스타일
+   - 버튼 느낌을 제거하고 전문적인 섹션 헤더 느낌 강조
    ========================================= */
 .control-group h3 {
-  display: inline-block;       /* 텍스트 길이에 맞춰 배경 생성 */
-  background-color: #000000;   /* 검은색 배경 */
-  color: #FFFFFF;              /* 흰색 텍스트 */
-  padding: 0.6rem 1.5rem;      /* 넉넉한 여백 */
-  border-radius: var(--radius-pill); /* 알약 모양 */
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 1.2rem;       /* 설명글과 간격 확보 */
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* 살짝 떠있는 입체감 */
-  letter-spacing: -0.02em;
+  background: transparent;
+  color: #000000;
+  
+  /* 왼쪽 강조 선 */
+  border-left: 6px solid #000000;
+  padding-left: 1rem;
+  
+  /* 폰트 스타일 */
+  font-size: 1.3rem;
+  font-weight: 800; 
+  margin-bottom: 1rem;
+  line-height: 1.1;
+  
+  /* 기존 버튼 스타일 제거 */
+  box-shadow: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
 }
 
 .control-group p {
   color: var(--text-sub);
   font-size: 0.95rem;
   margin-bottom: 1.5rem;
-  padding-left: 0.5rem; /* 타이틀과 시각적 정렬을 위해 살짝 들여쓰기 */
 }
 
 /* Buttons */
@@ -212,7 +220,7 @@ input:focus {
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* 상태별 색상 (JS에서 클래스 토글) */
+/* 상태별 색상 */
 .status-connected {
   background-color: #E6F4EA !important;
   color: #137333 !important;
