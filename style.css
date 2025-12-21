@@ -1,18 +1,22 @@
-/* style.css */
+/* style.css - Tech Pill & Big Mic & Status Colors */
 
 :root {
-  /* 기존 변수 유지 */
-  --primary: #000000;
-  --primary-hover: #333333;
-  --accent-grey: #F8F9FA;
-  --border-color: #D1D5DB;
-  --bg-color: #FFFFFF;
-  --text-main: #111111;
-  --text-sub: #666666;
-  --danger: #EA4335;
+  /* Palette */
+  --primary: #000000;       /* 메인: 블랙 */
+  --primary-hover: #333333; /* 호버: 다크 그레이 */
+  --accent-grey: #F8F9FA;   /* 카드 배경: 아주 연한 회색 */
+  --border-color: #D1D5DB;  /* 테두리: 구분감 있는 회색 */
   
-  --radius-pill: 50px;
-  --radius-card: 16px;
+  --bg-color: #FFFFFF;      /* 전체 배경: 화이트 */
+  --text-main: #111111;     /* 본문 텍스트 */
+  --text-sub: #666666;      /* 설명 텍스트 */
+  
+  --danger: #EA4335;        /* 포인트 컬러 (빨강) */
+  
+  /* Shapes */
+  --radius-pill: 50px;      /* 알약 모양 (완전 둥근 모서리) */
+  --radius-card: 16px;      /* 카드 모서리 */
+  
   --font-family: 'Pretendard', -apple-system, sans-serif;
 }
 
@@ -32,6 +36,7 @@ body {
   flex-direction: column;
 }
 
+/* Header */
 header {
   background: #000000;
   border-bottom: 1px solid #333;
@@ -74,6 +79,7 @@ header {
   color: #000000;
 }
 
+/* Main Layout */
 main {
   width: 100%;
   max-width: 840px;
@@ -87,7 +93,7 @@ main {
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px; /* 카드 간 간격 조금 더 넓힘 */
 }
 
 .control-group {
@@ -97,19 +103,30 @@ main {
   border: 1px solid var(--border-color);
 }
 
+/* =========================================
+   [수정] 아이디어 1. Tech Pill 스타일 적용
+   ========================================= */
 .control-group h3 {
-  font-size: 1.2rem;
+  display: inline-block;       /* 텍스트 길이에 맞춰 배경 생성 */
+  background-color: #000000;   /* 검은색 배경 */
+  color: #FFFFFF;              /* 흰색 텍스트 */
+  padding: 0.6rem 1.5rem;      /* 넉넉한 여백 */
+  border-radius: var(--radius-pill); /* 알약 모양 */
+  font-size: 1.1rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: var(--text-main);
+  margin-bottom: 1.2rem;       /* 설명글과 간격 확보 */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* 살짝 떠있는 입체감 */
+  letter-spacing: -0.02em;
 }
 
 .control-group p {
   color: var(--text-sub);
   font-size: 0.95rem;
   margin-bottom: 1.5rem;
+  padding-left: 0.5rem; /* 타이틀과 시각적 정렬을 위해 살짝 들여쓰기 */
 }
 
+/* Buttons */
 .button-group {
   display: flex;
   gap: 12px;
@@ -164,6 +181,7 @@ button {
   border-color: #333333;
 }
 
+/* Inputs */
 input {
   width: 100%;
   padding: 0.9rem 1.2rem;
@@ -179,9 +197,7 @@ input:focus {
   box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
 }
 
-/* =========================================
-   [수정 1] 상태창 디자인 변경 (기본값)
-   ========================================= */
+/* Status Messages */
 #bluetoothStatus {
   margin-top: 1rem;
   padding: 1rem;
@@ -189,24 +205,23 @@ input:focus {
   font-size: 1rem;
   text-align: center;
   font-weight: 700;
-  /* 기본 상태 (연결 전) */
+  /* 기본 상태 */
   background-color: #F1F3F4;
   color: #333;
   border: 1px solid var(--border-color);
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* 연결 성공 시 (연한 녹색 배경 + 녹색 텍스트) */
+/* 상태별 색상 (JS에서 클래스 토글) */
 .status-connected {
-  background-color: #E6F4EA !important;  /* 연한 녹색 */
-  color: #137333 !important;             /* 진한 녹색 텍스트 */
+  background-color: #E6F4EA !important;
+  color: #137333 !important;
   border-color: #137333 !important;
 }
 
-/* 연결 실패 시 (연한 빨간색 배경 + 빨간색 텍스트) */
 .status-error {
-  background-color: #FCE8E6 !important;  /* 연한 빨간색 */
-  color: #C5221F !important;             /* 진한 빨간색 텍스트 */
+  background-color: #FCE8E6 !important;
+  color: #C5221F !important;
   border-color: #C5221F !important;
 }
 
@@ -230,6 +245,7 @@ input:focus {
   color: var(--text-main);
 }
 
+/* Table */
 #command-table-container {
   overflow-x: auto;
   border: 1px solid var(--border-color);
@@ -267,18 +283,17 @@ tr:last-child td { border-bottom: none; }
 #user-command-ui input { flex: 2; }
 #user-command-ui button { flex: 1; min-width: 100px; }
 
+/* Voice UI */
 #voice-recognition-ui {
   display: flex;
   justify-content: center;
   padding: 2rem 0;
 }
 
-/* =========================================
-   [수정 2] 마이크 버튼 크기 확대
-   ========================================= */
+/* 큰 마이크 버튼 */
 .mic-button {
-  width: 120px !important;  /* 80px -> 120px 확대 */
-  height: 120px !important; /* 80px -> 120px 확대 */
+  width: 120px !important;
+  height: 120px !important;
   border-radius: 50% !important;
   background: var(--primary);
   color: white;
@@ -299,13 +314,13 @@ tr:last-child td { border-bottom: none; }
   box-shadow: 0 0 0 8px rgba(234, 67, 53, 0.2);
 }
 
-/* 아이콘 크기도 같이 키움 */
 .mic-button svg { 
-  width: 48px;  /* 32px -> 48px 확대 */
+  width: 48px; 
   height: 48px; 
   fill: white; 
 }
 
+/* Footer */
 footer {
   margin-top: auto;
   padding: 2rem;
