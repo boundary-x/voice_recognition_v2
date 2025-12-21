@@ -139,12 +139,12 @@ function createUserCommandUI() {
     inputContainer.child(breakLine);
 
     // 엑셀 내보내기 버튼
-    const exportBtn = createButton("📥 엑셀 저장").addClass("excel-button");
+    const exportBtn = createButton("📥 명령어 세트 저장").addClass("excel-button");
     exportBtn.mousePressed(exportCommandsToExcel);
     inputContainer.child(exportBtn);
 
     // 엑셀 불러오기 버튼
-    const importBtn = createButton("📤 엑셀 불러오기").addClass("excel-button");
+    const importBtn = createButton("📤 명령어 세트 불러오기").addClass("excel-button");
     importBtn.mousePressed(() => {
       select("#excelInput").elt.click(); 
     });
@@ -492,4 +492,5 @@ async function sendBluetoothData(data) {
     console.error("Send error:", e);
   }
 }
+
 
