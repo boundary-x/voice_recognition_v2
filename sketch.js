@@ -8,11 +8,16 @@ let rxCharacteristic = null;
 let isConnected = false;
 let bluetoothStatus = "Disconnected";
 
+// 음성 인식 관련 전역 변수
 let recognition;
 let transcript = ""; 
-let recognitionStatus = "버튼을 누르고 말을 하세요."; 
+let recognitionStatus = "블루투스를 연결하면 음성 인식이 준비됩니다."; 
 let feedbackEmoji = "👆"; 
 let sentData = ""; 
+
+// 로직 제어용 플래그
+let isRecognitionStarted = false; // 음성 인식 엔진이 켜져있는지 여부
+let isPressing = false;           // 사용자가 버튼을 누르고 있는지 여부
 
 const voiceCommands = {
   forward: ["전진", "앞으로", "직진", "출발"],
@@ -27,7 +32,7 @@ let userCommands = {};
 
 function setup() {
   console.log("Setup function called"); 
-  noCanvas(); // 캔버스 사용 안함 (p5.js 요소 제어만 사용)
+  noCanvas(); // p5.js 캔버스 미사용
 
   createBluetoothUI();
   createCommandTable();
@@ -36,11 +41,14 @@ function setup() {
   setupVoiceRecognition();
 
   // 엑셀 파일 입력 변경 감지 리스너
-  select("#excelInput").elt.addEventListener('change', importCommandsFromExcel, false);
+  const excelInput = select("#excelInput");
+  if(excelInput) {
+    excelInput.elt.addEventListener('change', importCommandsFromExcel, false);
+  }
 }
 
 /**
- * 블루투스 연결 UI 생성
+ * [1] 블루투스 연결 UI 생성
  */
 function createBluetoothUI() {
   const statusElement = select("#bluetoothStatus");
@@ -59,12 +67,12 @@ function createBluetoothUI() {
 }
 
 /**
- * 음성 인식 데이터 표 생성
+ * [2] 음성 인식 데이터 표 생성
  */
 function createCommandTable() {
   const tableContainer = select("#command-table-container");
   if (tableContainer) {
-    tableContainer.html(''); // 초기화
+    tableContainer.html(''); 
     const table = createElement("table");
     tableContainer.child(table);
 
@@ -81,13 +89,12 @@ function createCommandTable() {
       table.child(row);
     });
     
-    // 사용자 명령어는 updateCommandTable()에서 처리됨
     updateCommandTable(); 
   }
 }
 
 /**
- * 사용자 명령어 추가 UI & 엑셀 기능 버튼
+ * [3] 사용자 명령어 추가 UI & 엑셀 기능
  */
 function createUserCommandUI() {
   const inputContainer = select("#user-command-ui");
@@ -98,14 +105,13 @@ function createUserCommandUI() {
     const dataInput = createInput().attribute("placeholder", "전송 데이터 (예: DANCE)");
     inputContainer.child(dataInput);
 
-    // 추가 버튼
     const addButton = createButton("➕ 추가").addClass("start-button");
     addButton.style('width', '20%');
     addButton.mousePressed(() => {
       const command = commandInput.value().trim();
       const data = dataInput.value().trim();
       if (command && data) {
-        userCommands[command] = [data]; // 배열 형태로 저장
+        userCommands[command] = [data]; 
         updateCommandTable();
         commandInput.value("");
         dataInput.value("");
@@ -115,27 +121,23 @@ function createUserCommandUI() {
     });
     inputContainer.child(addButton);
 
-    // 줄바꿈용 (flex wrap)
     const breakLine = createDiv('').style('width', '100%').style('height', '10px');
     inputContainer.child(breakLine);
 
-    // 엑셀 내보내기 버튼
+    // 엑셀 내보내기
     const exportBtn = createButton("📥 엑셀 저장").addClass("excel-button");
     exportBtn.mousePressed(exportCommandsToExcel);
     inputContainer.child(exportBtn);
 
-    // 엑셀 불러오기 버튼
+    // 엑셀 불러오기
     const importBtn = createButton("📤 엑셀 불러오기").addClass("excel-button");
     importBtn.mousePressed(() => {
-      select("#excelInput").elt.click(); // 숨겨진 input file 트리거
+      select("#excelInput").elt.click(); 
     });
     inputContainer.child(importBtn);
   }
 }
 
-/**
- * 명령어 테이블 업데이트 (화면 갱신)
- */
 function updateCommandTable() {
   const table = select("table");
   if (table) {
@@ -145,7 +147,6 @@ function updateCommandTable() {
     header.child(createElement("th", "전송 데이터"));
     table.child(header);
 
-    // 기본 명령어 표시
     Object.entries(voiceCommands).forEach(([command, phrases]) => {
       const row = createElement("tr");
       row.child(createElement("td", phrases.join(", ")));
@@ -153,27 +154,24 @@ function updateCommandTable() {
       table.child(row);
     });
 
-    // 사용자 명령어 표시
     Object.entries(userCommands).forEach(([command, data]) => {
       const row = createElement("tr");
       row.child(createElement("td", command));
       row.child(createElement("td", data[0]));
-      row.style('background-color', '#fff9c4'); // 사용자 추가 항목 강조
+      row.style('background-color', '#fff9c4'); 
       table.child(row);
     });
   }
 }
 
 /**
- * [NEW] 엑셀 내보내기 기능
+ * 엑셀 내보내기/가져오기 로직
  */
 function exportCommandsToExcel() {
   if (Object.keys(userCommands).length === 0) {
     alert("내보낼 사용자 명령어가 없습니다.");
     return;
   }
-
-  // 데이터 포맷 변환 (Header + Data)
   const wsData = [["Command", "Data"]];
   Object.entries(userCommands).forEach(([key, val]) => {
     wsData.push([key, val[0]]);
@@ -182,14 +180,9 @@ function exportCommandsToExcel() {
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet(wsData);
   XLSX.utils.book_append_sheet(wb, ws, "UserCommands");
-
-  // 파일 다운로드
   XLSX.writeFile(wb, "my_commands.xlsx");
 }
 
-/**
- * [NEW] 엑셀 불러오기 기능
- */
 function importCommandsFromExcel(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -198,14 +191,10 @@ function importCommandsFromExcel(e) {
   reader.onload = function(e) {
     const data = new Uint8Array(e.target.result);
     const workbook = XLSX.read(data, { type: 'array' });
-    
     const firstSheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[firstSheetName];
-    
-    // JSON 변환
     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
     
-    // 첫 행(헤더) 제외하고 데이터 파싱
     let count = 0;
     for (let i = 1; i < jsonData.length; i++) {
       const row = jsonData[i];
@@ -214,72 +203,73 @@ function importCommandsFromExcel(e) {
         count++;
       }
     }
-    
     alert(`${count}개의 명령어를 불러왔습니다.`);
     updateCommandTable();
-    select("#excelInput").value(""); // 초기화
+    select("#excelInput").value("");
   };
   reader.readAsArrayBuffer(file);
 }
 
-
 /**
- * [NEW] 음성 인식 제어 UI (Push-to-Talk)
+ * [4] 음성 인식 제어 UI (Push-to-Talk & Always On Logic)
  */
 function createVoiceRecognitionUI() {
   const container = select("#voice-recognition-ui");
   if (container) {
-    container.html(''); // 기존 버튼 제거
+    container.html(''); 
 
-    // 원형 마이크 버튼 생성
     const micBtn = createButton("🎤").addClass("mic-button");
-    
-    // 마우스/터치 이벤트 등록
     const btnElt = micBtn.elt;
 
-    // 누를 때 (Start)
-    const startListening = (e) => {
-      e.preventDefault(); // 모바일 터치 시 스크롤 방지
+    // --- 버튼 누름 (데이터 수집 시작) ---
+    const handleDown = (e) => {
+      if(e.cancelable) e.preventDefault(); // 모바일 스크롤 방지
+      
       if (!isConnected) {
-        alert("먼저 블루투스를 연결해주세요!");
+        alert("먼저 블루투스를 연결해주세요! 연결 시 마이크가 자동 활성화됩니다.");
         return;
       }
+
+      // 만약 어떤 이유로 엔진이 꺼져있다면 재시작 시도
+      if (!isRecognitionStarted) {
+        try { recognition.start(); isRecognitionStarted = true; } catch(err) { console.log(err); }
+      }
+
+      isPressing = true; // 플래그 ON: 이제부터 들리는 소리는 명령어로 처리함
+      
       micBtn.addClass('active');
       feedbackEmoji = "👂";
-      recognitionStatus = "듣고 있어요...";
+      recognitionStatus = "듣고 있어요... (말하세요!)";
+      transcript = ""; // 이전 결과 초기화
       displayRecognitionStatus();
+    };
+
+    // --- 버튼 뗌 (데이터 수집 종료) ---
+    const handleUp = (e) => {
+      if(e.cancelable) e.preventDefault();
       
-      try {
-        recognition.start();
-      } catch (err) {
-        console.log("Already started", err);
-      }
-    };
-
-    // 뗄 때 (Stop & Send)
-    const stopListening = (e) => {
-      e.preventDefault();
+      isPressing = false; // 플래그 OFF: 이제 소리 무시
+      
       micBtn.removeClass('active');
-      feedbackEmoji = "📤";
-      recognitionStatus = "분석 중...";
-      displayRecognitionStatus();
-
-      try {
-        recognition.stop(); 
-        // stop()을 호출하면 잠시 후 'onresult' -> 'onend'가 트리거 되며 데이터가 처리됨
-      } catch (err) {
-        console.log("Already stopped", err);
-      }
+      feedbackEmoji = "✅";
+      // *중요* recognition.stop()을 호출하지 않음 (계속 켜둠)
+      
+      // UI 상태 복구
+      setTimeout(() => {
+        if (!isPressing) { 
+            recognitionStatus = "대기 중...";
+            displayRecognitionStatus();
+        }
+      }, 1500);
     };
 
-    // 이벤트 바인딩
-    btnElt.addEventListener('mousedown', startListening);
-    btnElt.addEventListener('mouseup', stopListening);
-    btnElt.addEventListener('mouseleave', stopListening); // 버튼 밖으로 나가면 중지
+    // 마우스/터치 이벤트 바인딩
+    btnElt.addEventListener('mousedown', handleDown);
+    btnElt.addEventListener('mouseup', handleUp);
+    btnElt.addEventListener('mouseleave', handleUp); 
 
-    // 모바일 터치 지원
-    btnElt.addEventListener('touchstart', startListening, { passive: false });
-    btnElt.addEventListener('touchend', stopListening, { passive: false });
+    btnElt.addEventListener('touchstart', handleDown, { passive: false });
+    btnElt.addEventListener('touchend', handleUp, { passive: false });
     
     container.child(micBtn);
     displayRecognitionStatus();
@@ -288,7 +278,7 @@ function createVoiceRecognitionUI() {
 }
 
 /**
- * 상태 표시
+ * 상태 표시 UI 업데이트
  */
 function displayRecognitionStatus() {
   const statusContainer = select("#status-container");
@@ -324,49 +314,57 @@ function displaySentData() {
 }
 
 /**
- * [UPDATE] 음성 인식 설정 (단발성 인식으로 변경)
+ * [5] 음성 인식 엔진 설정 (Continuous Mode)
  */
 function setupVoiceRecognition() {
   if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
     recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = "ko-KR";
-    recognition.interimResults = true; // 말하는 도중에도 결과를 보기 위해 true
-    recognition.continuous = false;    // 버튼 떼면 바로 끝내기 위해 false
+    recognition.interimResults = true; // 말하는 도중 결과 받기
+    recognition.continuous = true;     // [핵심] 끊기지 않고 계속 듣기
 
     recognition.onresult = (event) => {
-      // interimResults가 true이므로 계속 갱신됨
+      // [핵심] 버튼을 누르고 있지 않으면(isPressing == false) 결과 무시
+      if (!isPressing) return;
+
       let finalTranscript = "";
       for (let i = event.resultIndex; i < event.results.length; ++i) {
         if (event.results[i].isFinal) {
           finalTranscript += event.results[i][0].transcript;
         } else {
-          // 중간 결과 표시
-          transcript = event.results[i][0].transcript;
+          transcript = event.results[i][0].transcript; // 중간 결과 표시
           displayRecognitionStatus();
         }
       }
 
       if (finalTranscript) {
         transcript = finalTranscript.trim();
-        handleVoiceCommand(transcript); // 최종 결과일 때만 명령 처리
+        handleVoiceCommand(transcript); // 명령 처리
         displayRecognitionStatus();
       }
     };
 
     recognition.onerror = (event) => {
       console.error("Speech Error:", event.error);
-      recognitionStatus = "오류 발생: " + event.error;
+      if (event.error === 'not-allowed') {
+        recognitionStatus = "⚠️ 마이크 권한을 허용해주세요.";
+      } else {
+        isRecognitionStarted = false; // 에러 시 상태 초기화
+      }
       displayRecognitionStatus();
     };
 
     recognition.onend = () => {
-      // 인식이 완전히 끝났을 때
-      console.log("Recognition ended");
-      select(".mic-button").removeClass("active"); // 혹시 남아있을 active 제거
+      console.log("Recognition ended naturally");
+      isRecognitionStarted = false;
+      // 만약 사용자가 버튼을 누르는 중인데 끊겼다면 즉시 재시작
+      if (isPressing) {
+          try { recognition.start(); isRecognitionStarted = true; } catch(e){}
+      }
     };
 
   } else {
-    alert("이 브라우저는 음성 인식을 지원하지 않습니다. 크롬 브라우저를 사용하세요.");
+    alert("이 브라우저는 음성 인식을 지원하지 않습니다. 크롬(Chrome) 또는 엣지(edge) 브라우저를 사용하세요.");
   }
 }
 
@@ -374,7 +372,7 @@ function setupVoiceRecognition() {
  * 명령 처리 로직
  */
 function handleVoiceCommand(command) {
-  // 1. 사용자 명령 우선 검색
+  // 1. 사용자 명령 우선
   for (const [key, data] of Object.entries(userCommands)) {
     if (command.includes(key)) {
       sendBluetoothData(data[0]);
@@ -385,8 +383,7 @@ function handleVoiceCommand(command) {
       return;
     }
   }
-
-  // 2. 기본 명령 검색
+  // 2. 기본 명령
   for (const [key, phrases] of Object.entries(voiceCommands)) {
     if (phrases.some((phrase) => command.includes(phrase))) {
       sendBluetoothData(key);
@@ -403,7 +400,7 @@ function handleVoiceCommand(command) {
 }
 
 /**
- * 블루투스 관련 함수들 (기존 유지)
+ * [6] 블루투스 연결 (마이크 예열 포함)
  */
 async function connectBluetooth() {
   try {
@@ -416,6 +413,19 @@ async function connectBluetooth() {
     rxCharacteristic = await service.getCharacteristic(UART_RX_CHARACTERISTIC_UUID);
     isConnected = true;
     bluetoothStatus = `Connected to ${bluetoothDevice.name}`;
+
+    // === [핵심] 연결 성공 시 마이크 엔진 몰래 켜기 (Warm-up) ===
+    if (!isRecognitionStarted) {
+        try {
+            recognition.start();
+            isRecognitionStarted = true;
+            console.log("🎤 마이크 엔진이 백그라운드에서 예열되었습니다.");
+        } catch (err) {
+            console.log("마이크 시작 오류 (이미 켜져있을 수 있음):", err);
+        }
+    }
+    // ========================================================
+
   } catch (error) {
     console.error("Connection failed", error);
     bluetoothStatus = "Connection Failed";
@@ -431,6 +441,12 @@ function disconnectBluetooth() {
   bluetoothStatus = "Disconnected";
   bluetoothDevice = null;
   rxCharacteristic = null;
+  
+  // 블루투스 끊으면 마이크도 꺼서 배터리 절약 (선택사항)
+  if(isRecognitionStarted) {
+      try { recognition.stop(); isRecognitionStarted = false; } catch(e){}
+  }
+  
   updateBluetoothStatus();
 }
 
