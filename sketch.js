@@ -27,7 +27,11 @@ const voiceCommands = {
   stop: ["멈춰", "정지", "그만"],
   left: ["좌회전", "왼쪽", "좌측"],
   right: ["우회전", "오른쪽", "우측"],
-  ring: ["사이렌", "소리", "경보"]
+  ring: ["사이렌", "소리", "경보"],
+  name : ["이름", "너의 이름"],
+  happy : ["안녕", "반가워"],
+  angry : ["혼날래", "화났어"],
+  dance : ["춤 춰", "춤춰", "댄스"]
 };
 
 let userCommands = {}; 
@@ -419,3 +423,4 @@ async function sendBluetoothData(data) {
     console.error("Send error:", e);
   }
 }
+
