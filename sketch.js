@@ -76,12 +76,14 @@ function createCommandTable() {
     const header = createElement("tr");
     header.child(createElement("th", "음성 명령 (Inputs)"));
     header.child(createElement("th", "전송 데이터 (Outputs)"));
+    header.child(createElement("th", "삭제")); // 추가된 삭제 열
     table.child(header);
 
     Object.entries(voiceCommands).forEach(([command, phrases]) => {
       const row = createElement("tr");
       row.child(createElement("td", phrases.join(", ")));
       row.child(createElement("td", command));
+      row.child(createElement("td", "")); // 기본 명령어는 빈 칸
       table.child(row);
     });
     updateCommandTable(); 
@@ -95,19 +97,43 @@ function updateCommandTable() {
     const header = createElement("tr");
     header.child(createElement("th", "음성 명령 (Inputs)"));
     header.child(createElement("th", "전송 데이터 (Outputs)"));
+    header.child(createElement("th", "삭제")); // 추가된 삭제 열
     table.child(header);
 
+    // 기본 명령어 렌더링 (삭제 버튼 없음)
     Object.entries(voiceCommands).forEach(([command, phrases]) => {
       const row = createElement("tr");
       row.child(createElement("td", phrases.join(", ")));
       row.child(createElement("td", command));
+      row.child(createElement("td", "")); 
       table.child(row);
     });
 
+    // 사용자 추가 명령어 렌더링 (삭제 버튼 포함)
     Object.entries(userCommands).forEach(([command, data]) => {
       const row = createElement("tr");
       row.child(createElement("td", command));
       row.child(createElement("td", data[0]));
+      
+      // X 버튼 생성 및 스타일링
+      const deleteCell = createElement("td");
+      const deleteBtn = createButton("X");
+      deleteBtn.style('color', '#EA4335'); // 삭제 강조 (빨간색)
+      deleteBtn.style('background', 'transparent');
+      deleteBtn.style('border', 'none');
+      deleteBtn.style('font-weight', 'bold');
+      deleteBtn.style('font-size', '1rem');
+      deleteBtn.style('cursor', 'pointer');
+      
+      // 버튼 클릭 시 객체에서 해당 명령어 지우고 테이블 새로고침
+      deleteBtn.mousePressed(() => {
+        delete userCommands[command]; 
+        updateCommandTable(); 
+      });
+      
+      deleteCell.child(deleteBtn);
+      row.child(deleteCell);
+      
       row.style('background-color', '#F1F8E9'); 
       table.child(row);
     });
@@ -423,4 +449,5 @@ async function sendBluetoothData(data) {
     console.error("Send error:", e);
   }
 }
+
 
