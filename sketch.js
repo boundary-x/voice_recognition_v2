@@ -118,12 +118,14 @@ function updateCommandTable() {
       // X 버튼 생성 및 스타일링
       const deleteCell = createElement("td");
       const deleteBtn = createButton("X");
-      deleteBtn.style('color', '#EA4335'); // 삭제 강조 (빨간색)
+      deleteBtn.style('color', '#EA4335'); 
       deleteBtn.style('background', 'transparent');
       deleteBtn.style('border', 'none');
       deleteBtn.style('font-weight', 'bold');
       deleteBtn.style('font-size', '1rem');
       deleteBtn.style('cursor', 'pointer');
+      deleteBtn.style('padding', '0');      
+      deleteBtn.style('min-width', 'auto'); 
       
       // 버튼 클릭 시 객체에서 해당 명령어 지우고 테이블 새로고침
       deleteBtn.mousePressed(() => {
@@ -449,5 +451,6 @@ async function sendBluetoothData(data) {
     console.error("Send error:", e);
   }
 }
+
 
 
