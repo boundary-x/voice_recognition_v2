@@ -21,7 +21,14 @@ let sentData = "";
 let recognitionState = "idle";
 let stopRequested = false;  // 'starting' 상태에서 뗐을 때, onstart 오면 바로 멈추라는 예약
 let isPressing = false;
-let lastCommandTime = 0;
+
+// 한 번 누르고 있는 동안(세션) 이미 전송한 데이터는 다시 보내지 않기 위한 기록
+let sentCommandsThisSession = new Set();
+
+// 문자열에 한글(자모/완성형)이 포함되어 있는지 검사
+function containsKorean(text) {
+  return /[\uAC00-\uD7A3\u3131-\u318E]/.test(text);
+}
 
 const voiceCommands = {
   forward: ["전진", "앞으로", "직진", "출발"],
@@ -157,14 +164,18 @@ function createUserCommandUI() {
     addButton.mousePressed(() => {
       const command = commandInput.value().trim();
       const data = dataInput.value().trim();
-      if (command && data) {
-        userCommands[command] = [data]; 
-        updateCommandTable();
-        commandInput.value("");
-        dataInput.value("");
-      } else {
+      if (!command || !data) {
         alert("명령어와 데이터를 모두 입력해주세요.");
+        return;
       }
+      if (containsKorean(data)) {
+        alert("⚠️ 전송 데이터는 한글을 사용할 수 없어요. 영어로 입력해주세요. (예: DANCE)");
+        return;
+      }
+      userCommands[command] = [data]; 
+      updateCommandTable();
+      commandInput.value("");
+      dataInput.value("");
     });
     inputContainer.child(addButton);
 
@@ -250,6 +261,7 @@ function createVoiceRecognitionUI() {
       stopRequested = false;
       micBtn.addClass('active');
       transcript = "";
+      sentCommandsThisSession.clear();
       recognitionStatus = "마이크 준비 중...";
       displayRecognitionStatus();
 
@@ -364,13 +376,10 @@ function setupVoiceRecognition() {
       transcript = currentTranscript.trim();
       displayRecognitionStatus();
 
-      if (Date.now() - lastCommandTime > 800) {
-        if (checkAndSendCommand(transcript)) {
-          lastCommandTime = Date.now();
-          recognitionStatus = `명령어 감지됨: "${sentData}"`;
-          displayRecognitionStatus();
-          displaySentData();
-        }
+      if (checkAndSendCommand(transcript)) {
+        recognitionStatus = `명령어 감지됨: "${sentData}"`;
+        displayRecognitionStatus();
+        displaySentData();
       }
     };
 
@@ -410,19 +419,24 @@ function setupVoiceRecognition() {
   }
 }
 
+// 이번 세션에서 아직 안 보낸 데이터면 전송하고 기록, 이미 보낸 거면 건너뜀
+function trySendOnce(dataToSend) {
+  if (sentCommandsThisSession.has(dataToSend)) return false;
+  sentCommandsThisSession.add(dataToSend);
+  sendBluetoothData(dataToSend);
+  sentData = dataToSend;
+  return true;
+}
+
 function checkAndSendCommand(text) {
   for (const [key, data] of Object.entries(userCommands)) {
     if (text.includes(key)) {
-      sendBluetoothData(data[0]);
-      sentData = data[0];
-      return true;
+      return trySendOnce(data[0]);
     }
   }
   for (const [key, phrases] of Object.entries(voiceCommands)) {
     if (phrases.some((phrase) => text.includes(phrase))) {
-      sendBluetoothData(key);
-      sentData = key;
-      return true;
+      return trySendOnce(key);
     }
   }
   return false;
