@@ -17,9 +17,11 @@ let transcript = "";
 let recognitionStatus = "블루투스 연결 시 음성 인식이 준비됩니다."; 
 let sentData = ""; 
 
-let isRecognitionStarted = false; 
-let isPressing = false;           
-let lastCommandTime = 0;          
+// 'idle': 대기 | 'starting': start() 호출했지만 아직 onstart 안 옴 | 'listening': 실제로 듣는 중
+let recognitionState = "idle";
+let stopRequested = false;  // 'starting' 상태에서 뗐을 때, onstart 오면 바로 멈추라는 예약
+let isPressing = false;
+let lastCommandTime = 0;
 
 const voiceCommands = {
   forward: ["전진", "앞으로", "직진", "출발"],
@@ -242,31 +244,45 @@ function createVoiceRecognitionUI() {
         alert("먼저 블루투스를 연결해주세요.");
         return;
       }
-      if (!isRecognitionStarted) {
-        try { recognition.start(); isRecognitionStarted = true; } catch(err) {}
-      }
+      if (recognitionState !== "idle") return; // 이미 진행 중이면 무시(중복 클릭 방지)
 
       isPressing = true;
+      stopRequested = false;
       micBtn.addClass('active');
-      recognitionStatus = "듣고 있습니다...";
-      transcript = ""; 
+      transcript = "";
+      recognitionStatus = "마이크 준비 중...";
       displayRecognitionStatus();
+
+      recognitionState = "starting";
+      try {
+        recognition.start();
+      } catch (err) {
+        console.error("recognition.start 실패:", err);
+        recognitionState = "idle";
+        isPressing = false;
+        micBtn.removeClass('active');
+        recognitionStatus = "마이크를 시작하지 못했어요. 다시 눌러주세요.";
+        displayRecognitionStatus();
+      }
     };
 
     const handleUp = (e) => {
       if(e.cancelable) e.preventDefault();
+      isPressing = false;
       micBtn.removeClass('active');
-      
+
+      if (recognitionState === "idle") return; // 이미 끝난 상태면 아무 것도 안 함
+
       recognitionStatus = "처리 중...";
       displayRecognitionStatus();
 
-      setTimeout(() => {
-        if (!micBtn.hasClass('active')) { 
-          isPressing = false; 
-          recognitionStatus = "대기 중";
-          displayRecognitionStatus();
-        }
-      }, 800); 
+      if (recognitionState === "listening") {
+        // 뗀 시점까지 들은 내용을 최종 확정 짓기 위해 명시적으로 정지
+        try { recognition.stop(); } catch (err) { console.error(err); }
+      } else {
+        // 아직 'starting' 단계(onstart 전)라 지금 stop()이 안전하지 않을 수 있음 → onstart에서 처리
+        stopRequested = true;
+      }
     };
 
     btnElt.addEventListener('mousedown', handleDown);
@@ -321,8 +337,25 @@ function setupVoiceRecognition() {
     recognition.interimResults = true; 
     recognition.continuous = true;    
 
+    // 실제로 마이크가 듣기 시작한 시점 — 여기서부터가 진짜 '듣고 있습니다'
+    recognition.onstart = () => {
+      recognitionState = "listening";
+
+      if (stopRequested) {
+        // onstart 오기 전에 이미 손을 뗀 경우, 지금 바로 정지 처리
+        stopRequested = false;
+        try { recognition.stop(); } catch (e) {}
+        return;
+      }
+
+      if (isPressing) {
+        recognitionStatus = "듣고 있습니다...";
+        displayRecognitionStatus();
+      }
+    };
+
     recognition.onresult = (event) => {
-      if (!isPressing) return;
+      if (recognitionState === "idle") return;
 
       let currentTranscript = "";
       for (let i = event.resultIndex; i < event.results.length; ++i) {
@@ -343,18 +376,33 @@ function setupVoiceRecognition() {
 
     recognition.onerror = (event) => {
       console.error("Speech Error:", event.error);
+      recognitionState = "idle";
+      stopRequested = false;
+      isPressing = false;
+      const micBtnEl = select('.mic-button');
+      if (micBtnEl) micBtnEl.removeClass('active');
+
       if (event.error === 'not-allowed') {
         recognitionStatus = "마이크 권한이 필요합니다.";
+      } else if (event.error === 'no-speech') {
+        recognitionStatus = "음성이 감지되지 않았어요. 다시 시도해주세요.";
       } else {
-        isRecognitionStarted = false; 
+        recognitionStatus = "대기 중";
       }
       displayRecognitionStatus();
     };
 
     recognition.onend = () => {
-      isRecognitionStarted = false;
-      if (isPressing) {
-          try { recognition.start(); isRecognitionStarted = true; } catch(e){}
+      const hadSession = recognitionState !== "idle";
+      recognitionState = "idle";
+      stopRequested = false;
+      isPressing = false;
+      const micBtnEl = select('.mic-button');
+      if (micBtnEl) micBtnEl.removeClass('active');
+
+      if (hadSession) {
+        recognitionStatus = "대기 중";
+        displayRecognitionStatus();
       }
     };
   } else {
@@ -405,18 +453,15 @@ async function connectBluetooth() {
     const server = await bluetoothDevice.gatt.connect();
     const service = await server.getPrimaryService(UART_SERVICE_UUID);
     rxCharacteristic = await service.getCharacteristic(UART_RX_CHARACTERISTIC_UUID);
+
+    // 마이크로비트가 범위를 벗어나거나 전원이 꺼지는 등 예기치 않게 끊겼을 때도 상태를 동기화
+    bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
+
     isConnected = true;
     
     // Connected (Green)
     bluetoothStatus = `${bluetoothDevice.name} 연결됨`;
     updateBluetoothStatusUI('connected');
-
-    if (!isRecognitionStarted) {
-        try {
-            recognition.start();
-            isRecognitionStarted = true;
-        } catch (err) {}
-    }
   } catch (error) {
     console.error("Connection failed", error);
     // Error (Red)
@@ -425,20 +470,36 @@ async function connectBluetooth() {
   }
 }
 
-function disconnectBluetooth() {
-  if (bluetoothDevice && bluetoothDevice.gatt.connected) {
-    bluetoothDevice.gatt.disconnect();
-  }
+// 사용자가 직접 '연결 해제' 버튼을 눌렀는지 구분하기 위한 플래그
+let isManualDisconnect = false;
+
+// 수동 해제든 예기치 않은 끊김이든 이 함수 하나로 상태를 정리
+function onDisconnected() {
   isConnected = false;
   bluetoothDevice = null;
   rxCharacteristic = null;
-  
-  // Default (Grey)
-  bluetoothStatus = "연결 해제됨";
-  updateBluetoothStatusUI('default');
-  
-  if(isRecognitionStarted) {
-      try { recognition.stop(); isRecognitionStarted = false; } catch(e){}
+
+  if (isManualDisconnect) {
+    bluetoothStatus = "연결 해제됨";
+    updateBluetoothStatusUI('default');
+  } else {
+    bluetoothStatus = "연결이 끊어졌습니다. 다시 연결해주세요.";
+    updateBluetoothStatusUI('error');
+  }
+  isManualDisconnect = false;
+}
+
+function disconnectBluetooth() {
+  if (bluetoothDevice && bluetoothDevice.gatt.connected) {
+    // 실제 상태 정리는 'gattserverdisconnected' 이벤트를 받는 onDisconnected()가 담당
+    isManualDisconnect = true;
+    bluetoothDevice.gatt.disconnect();
+  } else {
+    isConnected = false;
+    bluetoothDevice = null;
+    rxCharacteristic = null;
+    bluetoothStatus = "연결 해제됨";
+    updateBluetoothStatusUI('default');
   }
 }
 
@@ -451,6 +512,3 @@ async function sendBluetoothData(data) {
     console.error("Send error:", e);
   }
 }
-
-
-
