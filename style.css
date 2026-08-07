@@ -308,6 +308,16 @@ tr:last-child td { border-bottom: none; }
   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
 }
 
+.mic-button.starting {
+  background: #FF9800; /* 주황 — 아직 준비 중임을 명확히 구분 */
+  animation: micPulse 0.8s ease-in-out infinite;
+}
+
+@keyframes micPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.4); }
+  50% { transform: scale(1.08); box-shadow: 0 0 0 14px rgba(255, 152, 0, 0); }
+}
+
 .mic-button.active {
   background: var(--danger);
   transform: scale(1.1);
