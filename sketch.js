@@ -295,7 +295,7 @@ function createVoiceRecognitionUI() {
       micBtn.addClass('starting'); // "준비 중" — 펄스 애니메이션으로 아직 듣고 있지 않음을 명확히 표시
       transcript = "";
       sentCommandsThisSession.clear();
-      recognitionStatus = "마이크 준비 중...";
+      recognitionStatus = "마이크 준비 중... (삐 소리가 나면 말해주세요)";
       displayRecognitionStatus();
 
       recognitionState = "starting";
@@ -395,7 +395,7 @@ function setupVoiceRecognition() {
       }
 
       if (isPressing) {
-        recognitionStatus = "듣고 있습니다...";
+        recognitionStatus = "🔔 지금부터 말해주세요!";
         displayRecognitionStatus();
         const micBtnEl = select('.mic-button');
         if (micBtnEl) {
