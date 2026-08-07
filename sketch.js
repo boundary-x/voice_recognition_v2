@@ -30,6 +30,37 @@ function containsKorean(text) {
   return /[\uAC00-\uD7A3\u3131-\u318E]/.test(text);
 }
 
+// === 시작음(비프) — 별도 파일 없이 Web Audio API로 직접 생성 ===
+let audioCtx = null;
+
+// 반드시 사용자 제스처(마이크 버튼을 누르는 순간) 안에서 호출해야 브라우저 자동재생 정책을 통과함
+function ensureAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+}
+
+// 실제로 듣기 시작한 시점(onstart)에 재생 — "지금부터 말하세요" 신호
+function playStartBeep() {
+  if (!audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = 880; // 짧고 경쾌한 음
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime); // 너무 크지 않게
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.12); // 120ms
+  } catch (e) {
+    console.warn("비프음 재생 실패:", e);
+  }
+}
+
 const voiceCommands = {
   forward: ["전진", "앞으로", "직진", "출발"],
   backward: ["뒤로", "후진"],
@@ -259,7 +290,9 @@ function createVoiceRecognitionUI() {
 
       isPressing = true;
       stopRequested = false;
-      micBtn.addClass('active');
+      // AudioContext는 사용자 제스처 안에서 미리 준비 — 나중에(onstart) 비프음을 안전하게 재생하기 위함
+      ensureAudioContext();
+      micBtn.addClass('starting'); // "준비 중" — 펄스 애니메이션으로 아직 듣고 있지 않음을 명확히 표시
       transcript = "";
       sentCommandsThisSession.clear();
       recognitionStatus = "마이크 준비 중...";
@@ -281,6 +314,7 @@ function createVoiceRecognitionUI() {
     const handleUp = (e) => {
       if(e.cancelable) e.preventDefault();
       isPressing = false;
+      micBtn.removeClass('starting');
       micBtn.removeClass('active');
 
       if (recognitionState === "idle") return; // 이미 끝난 상태면 아무 것도 안 함
@@ -363,6 +397,12 @@ function setupVoiceRecognition() {
       if (isPressing) {
         recognitionStatus = "듣고 있습니다...";
         displayRecognitionStatus();
+        const micBtnEl = select('.mic-button');
+        if (micBtnEl) {
+          micBtnEl.removeClass('starting');
+          micBtnEl.addClass('active'); // 펄스(대기) → 확정된 빨간 상태로 전환
+        }
+        playStartBeep(); // "지금부터 말하세요" 신호음
       }
     };
 
@@ -389,7 +429,7 @@ function setupVoiceRecognition() {
       stopRequested = false;
       isPressing = false;
       const micBtnEl = select('.mic-button');
-      if (micBtnEl) micBtnEl.removeClass('active');
+      if (micBtnEl) { micBtnEl.removeClass('starting'); micBtnEl.removeClass('active'); }
 
       if (event.error === 'not-allowed') {
         recognitionStatus = "마이크 권한이 필요합니다.";
@@ -407,7 +447,7 @@ function setupVoiceRecognition() {
       stopRequested = false;
       isPressing = false;
       const micBtnEl = select('.mic-button');
-      if (micBtnEl) micBtnEl.removeClass('active');
+      if (micBtnEl) { micBtnEl.removeClass('starting'); micBtnEl.removeClass('active'); }
 
       if (hadSession) {
         recognitionStatus = "대기 중";
