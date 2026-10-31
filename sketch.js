@@ -212,13 +212,15 @@ function createUserCommandUI() {
 
     inputContainer.child(createElement('div').style('width','100%').style('height','10px'));
 
+    const excelActions = createDiv().id("excel-command-actions");
+    inputContainer.child(excelActions);
     const exportBtn = createButton("엑셀 내보내기").addClass("excel-button");
     exportBtn.mousePressed(exportCommandsToExcel);
-    inputContainer.child(exportBtn);
+    excelActions.child(exportBtn);
 
     const importBtn = createButton("엑셀 불러오기").addClass("excel-button");
     importBtn.mousePressed(() => select("#excelInput").elt.click());
-    inputContainer.child(importBtn);
+    excelActions.child(importBtn);
   }
 }
 
@@ -566,3 +568,5 @@ async function sendBluetoothData(data) {
     console.error("Send error:", e);
   }
 }
+
+
