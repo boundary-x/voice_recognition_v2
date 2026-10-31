@@ -11,6 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
   <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" href="support.css">
 </head>
 <body>
   <header>
@@ -19,7 +20,7 @@
         <img src="https://raw.githubusercontent.com/boundary-x/ai_voice_recognition/refs/heads/main/boundaryx_logo.png" alt="Logo"></a>
       AI 음성인식
     </div>
-    <a href="https://boundaryx.io/59" class="back-button">돌아가기</a>
+    <div class="header-actions"><button type="button" class="help-button" data-help="">도움말</button><a href="https://boundaryx.io/59" class="back-button">돌아가기</a></div>
   </header>
 
   <main>
@@ -49,11 +50,12 @@
 
       <div class="control-group" id="voice-recognition-group">
         <h3>4. 음성 제어</h3>
-        <p>버튼을 <b>누른 상태</b>에서 명령을 말하고, <b>떼면</b> 전송이 완료됩니다.</p>
+        <p>버튼을 <b>누른 채 신호음을 기다린 뒤</b> 말하세요. 명령이 감지되면 전송하고, 손을 떼면 음성 입력이 끝납니다.</p>
         <div id="voice-recognition-ui"></div>
         <div id="status-container"></div>
       </div>
 
+      <details id="support-card" class="control-group"></details>
     </section>
   </main>
 
@@ -103,6 +105,7 @@
   </footer>
 
   <script src="sketch.js" defer></script>
+  <script src="support.js" defer></script>
   <script>
     document.querySelector('.back-button').addEventListener('click', () => {
        // 뒤로가기 로직
@@ -110,5 +113,7 @@
   </script>
 </body>
 </html>
+
+
 
 
